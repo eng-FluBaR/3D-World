@@ -22,12 +22,13 @@ onReady(() => {
       successBox.textContent = "";
     }
 
+    const name = document.getElementById("name")?.value?.trim() || "";
     const email = document.getElementById("email")?.value?.trim() || "";
     const password = document.getElementById("password")?.value || "";
 
-    if (!email || !password) {
+    if (!name || !email || !password) {
       if (errorBox) {
-        errorBox.textContent = "Please enter email and password.";
+        errorBox.textContent = "Моля попълнете всички полета.";
         errorBox.classList.remove("d-none");
       }
       return;
@@ -36,18 +37,18 @@ onReady(() => {
     if (submitButton) submitButton.disabled = true;
 
     try {
-      const { error } = await signUpWithEmail(email, password);
+      const { error } = await signUpWithEmail(email, password, name);
       if (error) {
         throw error;
       }
       if (successBox) {
-        successBox.textContent = "Registration successful. Check your email to confirm.";
+        successBox.textContent = "Регистрацията е успешна! Проверете имейла си за потвърждение.";
         successBox.classList.remove("d-none");
       }
       form.reset();
     } catch (err) {
       if (errorBox) {
-        errorBox.textContent = err?.message || "Registration failed. Please try again.";
+        errorBox.textContent = err?.message || "Регистрацията се провали. Моля опитайте отново.";
         errorBox.classList.remove("d-none");
       }
     } finally {

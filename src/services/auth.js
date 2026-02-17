@@ -9,9 +9,19 @@ function getClient() {
   return supabaseClient;
 }
 
-export async function signUpWithEmail(email, password) {
+export async function signUpWithEmail(email, password, displayName = null) {
   const client = getClient();
-  return client.auth.signUp({ email, password });
+  const options = { email, password };
+  
+  if (displayName) {
+    options.options = {
+      data: {
+        display_name: displayName
+      }
+    };
+  }
+  
+  return client.auth.signUp(options);
 }
 
 export async function signInWithEmail(email, password) {
@@ -25,9 +35,22 @@ export async function signOut() {
 }
 
 export async function getSession() {
-  const client = getClient();
-  const { data } = await client.auth.getSession();
-  return data?.session || null;
+  try {
+    const client = getClient();
+    const { data, error } = await client.auth.getSession();
+    
+    if (error) {
+      console.error('[AUTH] Error getting session:', error);
+      return null;
+    }
+    
+    const session = data?.session || null;
+    console.log('[AUTH] Session status:', session ? 'active' : 'no session', session?.user?.id);
+    return session;
+  } catch (err) {
+    console.error('[AUTH] Exception in getSession:', err);
+    return null;
+  }
 }
 
 export function onAuthStateChange(callback) {

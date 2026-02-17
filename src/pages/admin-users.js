@@ -28,20 +28,20 @@ function renderRow(user) {
   const toggleButtonClass = user.is_disabled ? "btn-warning" : "btn-outline-danger";
 
   return `
-    <tr data-id="${user.user_id}">
+    <tr data-id="${user.id}">
       <td>${user.email || "-"}</td>
       <td>
-        <select class="form-select form-select-sm role-select" data-id="${user.user_id}">
+        <select class="form-select form-select-sm role-select" data-id="${user.id}">
           ${roleSelect}
         </select>
       </td>
       <td>${getStatusBadge(user.is_disabled)}</td>
       <td>${formatDate(user.created_at)}</td>
       <td class="text-end">
-        <button class="btn btn-sm ${toggleButtonClass} toggle-user" data-id="${user.user_id}">
+        <button class="btn btn-sm ${toggleButtonClass} toggle-user" data-id="${user.id}">
           ${toggleButtonText}
         </button>
-        <button class="btn btn-sm btn-primary save-user" data-id="${user.user_id}">Save</button>
+        <button class="btn btn-sm btn-primary save-user" data-id="${user.id}">Save</button>
       </td>
     </tr>
   `;
@@ -72,7 +72,7 @@ onReady(async () => {
   const loadUsers = async () => {
     const { data, error } = await client
       .from("profiles")
-      .select("user_id, email, role, is_disabled, created_at")
+      .select("id, email, role, is_disabled, created_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -97,7 +97,7 @@ onReady(async () => {
       btn.addEventListener("click", () => {
         const userId = btn.getAttribute("data-id");
         const row = body.querySelector(`tr[data-id="${userId}"]`);
-        const user = allUsers.find((u) => u.user_id === userId);
+        const user = allUsers.find((u) => u.id === userId);
 
         if (!userStates[userId]) {
           userStates[userId] = { ...user };
@@ -127,7 +127,7 @@ onReady(async () => {
           return;
         }
 
-        const state = userStates[userId] || allUsers.find((u) => u.user_id === userId);
+        const state = userStates[userId] || allUsers.find((u) => u.id === userId);
         const updatePayload = {
           role,
           is_disabled: state.is_disabled || false
@@ -138,12 +138,12 @@ onReady(async () => {
         const { error } = await client
           .from("profiles")
           .update(updatePayload)
-          .eq("user_id", userId);
+          .eq("id", userId);
 
         if (error) {
           alert(error.message);
         } else {
-          const userIndex = allUsers.findIndex((u) => u.user_id === userId);
+          const userIndex = allUsers.findIndex((u) => u.id === userId);
           if (userIndex !== -1) {
             allUsers[userIndex] = { ...allUsers[userIndex], ...updatePayload };
             userStates[userId] = { ...allUsers[userIndex] };

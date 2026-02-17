@@ -7,7 +7,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO authenticated;
 
 -- Profiles table
 CREATE TABLE IF NOT EXISTS public.profiles (
-  user_id UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
+  id UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
   email TEXT UNIQUE NOT NULL,
   display_name TEXT,
   role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'moderator', 'super_admin')),
@@ -22,28 +22,28 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 -- Profiles RLS policies
 CREATE POLICY "Users can view own profile"
   ON public.profiles FOR SELECT
-  USING (auth.uid() = user_id);
+  USING (auth.uid() = id);
 
 CREATE POLICY "Admins can view all profiles"
   ON public.profiles FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE user_id = auth.uid()
+      WHERE id = auth.uid()
       AND role IN ('moderator', 'super_admin')
     )
   );
 
 CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
-  USING (auth.uid() = user_id);
+  USING (auth.uid() = id);
 
 CREATE POLICY "Super admin can manage all profiles"
   ON public.profiles FOR ALL
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
-      WHERE user_id = auth.uid()
+      WHERE id = auth.uid()
       AND role = 'super_admin'
     )
   );
@@ -51,7 +51,7 @@ CREATE POLICY "Super admin can manage all profiles"
 -- Requests table
 CREATE TABLE IF NOT EXISTS public.requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   file_name TEXT,
   file_path TEXT,
   file_url TEXT,

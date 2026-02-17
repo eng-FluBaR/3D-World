@@ -40,7 +40,7 @@ onReady(async () => {
     const { data, error } = await client
       .from("profiles")
       .select("display_name")
-      .eq("user_id", userId)
+      .eq("id", userId)
       .single();
 
     if (error && error.code !== "PGRST116") {
@@ -68,19 +68,20 @@ onReady(async () => {
       try {
         const { error } = await client.from("profiles").upsert(
           {
-            user_id: userId,
+            id: userId,
+            email: session.user?.email || "",
             display_name: displayName
           },
-          { onConflict: "user_id" }
+          { onConflict: "id" }
         );
 
         if (error) {
           throw error;
         }
 
-        showMessage(successBox, "Profile updated successfully.");
+        showMessage(successBox, "Профилът е актуализиран успешно.");
       } catch (err) {
-        showMessage(errorBox, err?.message || "Failed to update profile.");
+        showMessage(errorBox, err?.message || "Неуспешна актуализация на профила.");
       } finally {
         if (submitButton) submitButton.disabled = false;
       }

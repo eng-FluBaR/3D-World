@@ -21,7 +21,7 @@ onReady(() => {
 
     if (!email || !password) {
       if (errorBox) {
-        errorBox.textContent = "Please enter email and password.";
+        errorBox.textContent = "Моля въведете имейл и парола.";
         errorBox.classList.remove("d-none");
       }
       return;
@@ -37,7 +37,7 @@ onReady(() => {
       window.location.replace("/dashboard.html");
     } catch (err) {
       if (errorBox) {
-        errorBox.textContent = err?.message || "Login failed. Please try again.";
+        errorBox.textContent = err?.message || "Входът се провали. Моля опитайте отново.";
         errorBox.classList.remove("d-none");
       }
     } finally {

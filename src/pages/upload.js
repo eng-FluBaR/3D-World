@@ -20,7 +20,92 @@ function sanitizeFileName(name) {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
+async function ensureProfileExists(client, session) {
+  const userId = session?.user?.id;
+  const email = session?.user?.email || null;
+  const displayName = session?.user?.user_metadata?.display_name || null;
+
+  if (!userId) {
+    throw new Error("Невалидна потребителска сесия.");
+  }
+
+  const { data: existingProfile, error: profileReadError } = await client
+    .from("profiles")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (profileReadError) {
+    throw profileReadError;
+  }
+
+  if (existingProfile) {
+    return;
+  }
+
+  const { error: profileInsertError } = await client
+    .from("profiles")
+    .insert({
+      user_id: userId,
+      email,
+      display_name: displayName,
+      role: "user"
+    });
+
+  if (profileInsertError) {
+    throw profileInsertError;
+  }
+}
+
+async function loadMaterials() {
+  try {
+    const client = createSupabaseClient();
+    const { data, error } = await client
+      .from("materials")
+      .select("id, name, base_price")
+      .order("name", { ascending: true });
+
+    if (error) throw error;
+
+    const materialSelect = document.getElementById("material");
+    if (!materialSelect) return;
+
+    // Keep the default option
+    materialSelect.innerHTML = '<option value="" selected disabled>Изберете материал</option>';
+
+    // Add materials from database
+    if (data && data.length > 0) {
+      data.forEach(material => {
+        const option = document.createElement("option");
+        option.value = material.name;
+        option.textContent = `${material.name} - ${material.base_price} лв/час`;
+        materialSelect.appendChild(option);
+      });
+    } else {
+      // Fallback to default materials if none in database
+      const defaultMaterials = [
+        { name: "PLA", label: "PLA - Полилактид (стандартен)" },
+        { name: "PETG", label: "PETG - Издръжлив и гъвкав" },
+        { name: "ABS", label: "ABS - Висока якост" }
+      ];
+      
+      defaultMaterials.forEach(material => {
+        const option = document.createElement("option");
+        option.value = material.name;
+        option.textContent = material.label;
+        materialSelect.appendChild(option);
+      });
+    }
+  } catch (err) {
+    console.error('[UPLOAD] Error loading materials:', err);
+    // Keep default HTML materials on error
+  }
+}
+
 onReady(() => {
+  // Load materials from database
+  loadMaterials();
+
   const form = document.getElementById("upload-form");
   const errorBox = document.getElementById("upload-error");
   const successBox = document.getElementById("upload-success");
@@ -50,23 +135,26 @@ onReady(() => {
     const notes = notesInput?.value?.trim() || "";
 
     if (!file) {
-      showMessage(errorBox, "Please select an STL or OBJ file.");
+      showMessage(errorBox, "Моля изберете STL, OBJ или SVG файл.");
       return;
     }
 
     const lowerName = file.name.toLowerCase();
-    if (!lowerName.endsWith(".stl") && !lowerName.endsWith(".obj")) {
-      showMessage(errorBox, "Only STL or OBJ files are allowed.");
+    const allowedExtensions = [".stl", ".obj", ".svg"];
+    const isValidFile = allowedExtensions.some(ext => lowerName.endsWith(ext));
+    
+    if (!isValidFile) {
+      showMessage(errorBox, "Позволени са само STL, OBJ и SVG файлове.");
       return;
     }
 
     if (!material) {
-      showMessage(errorBox, "Please select a material.");
+      showMessage(errorBox, "Моля изберете материал.");
       return;
     }
 
     if (!Number.isInteger(quantity) || quantity < 1) {
-      showMessage(errorBox, "Please enter a valid quantity.");
+      showMessage(errorBox, "Моля въведете валидно количество.");
       return;
     }
 
@@ -75,6 +163,7 @@ onReady(() => {
     try {
       const client = createSupabaseClient();
       const userId = session.user?.id;
+      await ensureProfileExists(client, session);
       const safeName = sanitizeFileName(file.name);
       const filePath = `requests/${userId}/${Date.now()}-${safeName}`;
 
@@ -105,10 +194,32 @@ onReady(() => {
         throw insertError;
       }
 
-      showMessage(successBox, "Request submitted successfully.");
+      showMessage(successBox, "Заявката е изпратена успешно.");
       form.reset();
     } catch (err) {
-      showMessage(errorBox, err?.message || "Upload failed. Please try again.");
+      console.error('[UPLOAD] Upload error:', err);
+      console.error('[UPLOAD] Error details:', {
+        message: err?.message,
+        code: err?.code,
+        details: err?.details,
+        hint: err?.hint
+      });
+      
+      let errorMessage = "Качването се провали. Моля опитайте отново.";
+      
+      if (err?.message) {
+        errorMessage = err.message;
+      }
+      
+      if (err?.code === '42P17') {
+        errorMessage = "Грешка в базата данни. Моля влезте отново в акаунта си.";
+      }
+      
+      if (err?.message?.includes('row-level security')) {
+        errorMessage = "Нямате права за качване на файлове. Моля влезте в акаунта си.";
+      }
+      
+      showMessage(errorBox, errorMessage);
     } finally {
       if (submitButton) submitButton.disabled = false;
     }
