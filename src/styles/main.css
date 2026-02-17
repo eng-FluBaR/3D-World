@@ -34,6 +34,14 @@ body {
   display: flex;
   flex-direction: column;
   line-height: 1.6;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 main {
@@ -84,20 +92,31 @@ main {
 }
 
 #app-nav .dropdown-menu {
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-md);
-  border: none;
-  margin-top: 0.5rem;
+  border-radius: 0.9rem;
+  box-shadow: 0 14px 34px rgba(24, 32, 56, 0.28);
+  border: 1px solid rgba(102, 126, 234, 0.28);
+  margin-top: 0.65rem;
+  min-width: 220px;
+  background: #ffffff;
+  padding: 0.5rem;
 }
 
 #app-nav .dropdown-item {
-  padding: 0.75rem 1.25rem;
+  padding: 0.7rem 0.95rem;
   transition: all 0.2s ease;
+  border-radius: 0.55rem;
+  color: #2d3748;
+  font-weight: 600;
 }
 
 #app-nav .dropdown-item:hover {
   background: var(--gradient-primary);
   color: #fff;
+}
+
+#app-nav .dropdown-divider {
+  margin: 0.45rem 0;
+  border-top-color: rgba(102, 126, 234, 0.2);
 }
 
 /* ============ Hero Section ============ */
@@ -402,8 +421,20 @@ footer a:hover {
   animation: fadeInUp 0.6s ease-out;
 }
 
+.model-preview canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* ============ Responsive ============ */
 @media (max-width: 992px) {
+  .container,
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
   .page-hero {
     padding: 3rem 1.5rem;
   }
@@ -414,6 +445,28 @@ footer a:hover {
 }
 
 @media (max-width: 768px) {
+  #app-nav .navbar-brand {
+    font-size: 1.2rem !important;
+  }
+
+  #app-nav .navbar-collapse {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+  }
+
+  #app-nav .navbar-nav .nav-link {
+    padding: 0.625rem 0.75rem !important;
+  }
+
+  #app-nav .navbar-nav .btn {
+    width: 100%;
+    margin-left: 0 !important;
+    margin-top: 0.5rem;
+  }
+
   .page-hero {
     padding: 2.5rem 1.5rem;
   }
@@ -422,13 +475,33 @@ footer a:hover {
     font-size: 2rem;
   }
 
-  .btn {
-    width: 100%;
-    margin-bottom: 0.75rem;
+  .page-hero p {
+    font-size: 1rem;
   }
 
   .btn-lg {
     padding: 0.875rem 2rem;
+  }
+
+  .table {
+    min-width: 700px;
+  }
+
+  .table .form-control,
+  .table .form-select {
+    min-width: 120px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .table td .d-inline-flex {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .card:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
   }
 }
 
@@ -444,5 +517,15 @@ footer a:hover {
 
   .card-body {
     padding: 1.25rem;
+  }
+
+  .container.py-5 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  .form-control,
+  .form-select {
+    padding: 0.75rem 1rem;
   }
 }

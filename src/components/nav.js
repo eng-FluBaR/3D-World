@@ -79,11 +79,15 @@ export async function initNav(activePage) {
   let navItems = [...PUBLIC_NAV_ITEMS];
   
   if (isAuthenticated) {
-    navItems = [...PUBLIC_NAV_ITEMS, ...USER_NAV_ITEMS];
+    navItems = [...PUBLIC_NAV_ITEMS];
     if (isAdmin) {
       navItems = [...navItems, ...ADMIN_NAV_ITEMS];
     }
   }
+
+  const userMenuItems = USER_NAV_ITEMS.map(
+    (item) => `<li><a class="dropdown-item" href="${item.href}">${item.name}</a></li>`
+  ).join("");
 
   const authButtons = isAuthenticated
     ? `<li class="nav-item dropdown">
@@ -91,7 +95,8 @@ export async function initNav(activePage) {
            👤 ${userInfo.name}
          </a>
          <ul class="dropdown-menu dropdown-menu-end">
-           <li><a class="dropdown-item" href="/profile.html">Профил</a></li>
+           ${userMenuItems}
+           ${isAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
            <li><hr class="dropdown-divider"></li>
            <li><a class="dropdown-item" href="#" id="logout-btn">Изход</a></li>
          </ul>
