@@ -16,41 +16,33 @@
     <div id="app-nav"></div>
     <main class="flex-grow-1">
       <div class="container py-5">
-        <div class="row g-4">
-          <div class="col-lg-8">
-            <div class="page-hero mb-4">
-              <h1>Настройки на профила 👤</h1>
+        <div class="page-hero mb-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+              <h1 class="mb-2">Настройки на профила 👤</h1>
               <p>Управлявайте личните си данни</p>
             </div>
-            <form class="card shadow" id="profile-form">
-              <div class="card-body">
-                <div class="mb-4">
-                  <label class="form-label fw-semibold" for="email">Имейл адрес</label>
-                  <input class="form-control" type="email" id="email" disabled />
-                  <div class="form-text">Имейлът не може да бъде променян</div>
-                </div>
-                <div class="mb-4">
-                  <label class="form-label fw-semibold" for="displayName">Име за показване</label>
-                  <input class="form-control" type="text" id="displayName" placeholder="Иван Иванов" />
-                  <div class="form-text">Това име ще се вижда в навигацията</div>
-                </div>
-                <div class="alert alert-danger d-none" role="alert" id="profile-error"></div>
-                <div class="alert alert-success d-none" role="alert" id="profile-success"></div>
-                <button class="btn btn-primary btn-lg w-100" type="submit" id="profile-submit">Запази промените</button>
-              </div>
-            </form>
+            <button class="btn btn-outline-light" id="logout-button" type="button">Изход</button>
           </div>
-          <div class="col-lg-4">
-            <div class="card shadow border-danger">
-              <div class="card-body">
-                <h5 class="card-title text-danger">Опасна зона ⚠️</h5>
-                <p class="card-text text-muted mb-3">Излезте от акаунта си</p>
-                <button class="btn btn-outline-danger w-100" id="logout-button" type="button">
-                  Изход
-                </button>
-              </div>
+        </div>
+
+        <form class="card shadow" id="profile-form">
+          <div class="card-body">
+            <div class="mb-4">
+              <label class="form-label fw-semibold" for="email">Имейл адрес</label>
+              <input class="form-control" type="email" id="email" disabled />
+              <div class="form-text">Имейлът не може да бъде променян</div>
             </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold" for="displayName">Име за показване</label>
+              <input class="form-control" type="text" id="displayName" placeholder="Иван Иванов" />
+              <div class="form-text">Това име ще се вижда в навигацията</div>
+            </div>
+            <div class="alert alert-danger d-none" role="alert" id="profile-error"></div>
+            <div class="alert alert-success d-none" role="alert" id="profile-success"></div>
+            <button class="btn btn-primary btn-lg w-100" type="submit" id="profile-submit">Запази промените</button>
           </div>
+        </form>
       </div>
     </main>
     <script type="module" src="/src/main.js"></script>

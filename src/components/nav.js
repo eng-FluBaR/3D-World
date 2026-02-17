@@ -89,7 +89,7 @@ export async function initNav(activePage) {
     (item) => `<li><a class="dropdown-item" href="${item.href}">${item.name}</a></li>`
   ).join("");
 
-  const authButtons = isAuthenticated
+  const desktopAuthButtons = isAuthenticated
     ? `<li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
            👤 ${userInfo.name}
@@ -98,16 +98,33 @@ export async function initNav(activePage) {
            ${userMenuItems}
            ${isAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
            <li><hr class="dropdown-divider"></li>
-           <li><a class="dropdown-item" href="#" id="logout-btn">Изход</a></li>
+           <li><a class="dropdown-item" href="#" id="logout-btn-desktop">Изход</a></li>
          </ul>
        </li>`
     : `<li class="nav-item"><a class="nav-link" href="/login.html">Вход</a></li>
        <li class="nav-item"><a class="btn btn-outline-light ms-2" href="/register.html">Регистрация</a></li>`;
 
+  const mobileProfile = isAuthenticated
+    ? `<div class="mobile-profile-slot d-lg-none">
+         <div class="dropdown">
+           <a class="nav-link dropdown-toggle mobile-profile-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+             👤 ${userInfo.name}
+           </a>
+           <ul class="dropdown-menu dropdown-menu-end">
+             ${userMenuItems}
+             ${isAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
+             <li><hr class="dropdown-divider"></li>
+             <li><a class="dropdown-item" href="#" id="logout-btn-mobile">Изход</a></li>
+           </ul>
+         </div>
+       </div>`
+    : "";
+
   navHost.innerHTML = `
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-      <div class="container-fluid">
+      <div class="container-fluid nav-shell position-relative">
         <a class="navbar-brand fw-bold" href="/index.html" style="font-size: 1.5rem;">🖨️ 3D World</a>
+        ${mobileProfile}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -118,8 +135,8 @@ export async function initNav(activePage) {
               return `<li class="nav-item"><a class="nav-link ${activeClass}" href="${item.href}">${item.name}</a></li>`;
             }).join("")}
           </ul>
-          <ul class="navbar-nav ms-auto">
-            ${authButtons}
+          <ul class="navbar-nav ms-auto d-none d-lg-flex">
+            ${desktopAuthButtons}
           </ul>
         </div>
       </div>
@@ -128,14 +145,21 @@ export async function initNav(activePage) {
 
   // Handle logout
   if (isAuthenticated) {
-    const logoutBtn = document.getElementById("logout-btn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const { signOut } = await import("../services/auth.js");
-        await signOut();
-        window.location.href = "/index.html";
-      });
+    const handleLogout = async (event) => {
+      event.preventDefault();
+      const { signOut } = await import("../services/auth.js");
+      await signOut();
+      window.location.href = "/index.html";
+    };
+
+    const desktopLogoutBtn = document.getElementById("logout-btn-desktop");
+    if (desktopLogoutBtn) {
+      desktopLogoutBtn.addEventListener("click", handleLogout);
+    }
+
+    const mobileLogoutBtn = document.getElementById("logout-btn-mobile");
+    if (mobileLogoutBtn) {
+      mobileLogoutBtn.addEventListener("click", handleLogout);
     }
   }
 }
