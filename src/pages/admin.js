@@ -15,6 +15,10 @@ onReady(async () => {
   const pendingRequestsEl = document.getElementById("pending-requests");
   const completedRequestsEl = document.getElementById("completed-requests");
   const totalRevenueEl = document.getElementById("total-revenue");
+  const logoutButton = document.getElementById("admin-logout");
+  const loginLink = document.getElementById("admin-login-link");
+  const userViewLink = document.getElementById("admin-user-view");
+  const publicViewLink = document.getElementById("admin-public-view");
 
   const role = await requireAdminRole();
   if (!role) {
@@ -26,6 +30,27 @@ onReady(async () => {
   }
 
   const client = createSupabaseClient();
+
+  if (loginLink) {
+    loginLink.addEventListener("click", async (event) => {
+      event.preventDefault();
+      window.location.href = "/login.html";
+    });
+  }
+
+  if (userViewLink) {
+    userViewLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.location.href = "/dashboard.html";
+    });
+  }
+
+  if (publicViewLink) {
+    publicViewLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.location.href = "/index.html";
+    });
+  }
 
   const loadStats = async () => {
     const { data, error } = await client.from("requests").select("id, status, price");
@@ -56,7 +81,6 @@ onReady(async () => {
 
   await loadStats();
 
-  const logoutButton = document.getElementById("admin-logout");
   if (logoutButton) {
     logoutButton.addEventListener("click", async () => {
       logoutButton.disabled = true;
