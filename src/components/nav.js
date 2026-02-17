@@ -1,12 +1,10 @@
 const NAV_ITEMS = [
-  { name: "Home", href: "/index.html", page: "index" },
-  { name: "Login", href: "/login.html", page: "login" },
-  { name: "Register", href: "/register.html", page: "register" },
-  { name: "Dashboard", href: "/dashboard.html", page: "dashboard" },
-  { name: "Upload", href: "/upload.html", page: "upload" },
-  { name: "Requests", href: "/requests.html", page: "requests" },
-  { name: "Profile", href: "/profile.html", page: "profile" },
-  { name: "Admin", href: "/admin.html", page: "admin" }
+  { name: "Услуги", href: "/services.html", page: "services" },
+  { name: "Материали", href: "/materials.html", page: "materials" },
+  { name: "Как работи", href: "/how-it-works.html", page: "how-it-works" },
+  { name: "Галерия", href: "/gallery.html", page: "gallery" },
+  { name: "Контакти", href: "/contacts.html", page: "contacts" },
+  { name: "Вход", href: "/login.html", page: "login" }
 ];
 
 export function initNav(activePage) {
@@ -16,7 +14,7 @@ export function initNav(activePage) {
   navHost.innerHTML = `
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/index.html">3D World</a>
+        <a class="navbar-brand" href="/index.html">🖨️ 3D World</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>

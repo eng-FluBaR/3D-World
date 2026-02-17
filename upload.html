@@ -18,15 +18,15 @@
       <h1 class="h3 mb-4">Submit 3D Printing Request</h1>
       <form class="card card-body shadow-sm" id="upload-form">
         <div class="mb-3">
-          <label class="form-label" for="model-file">STL or OBJ File</label>
+          <label class="form-label" for="model-file">3D Model or Vector Image</label>
           <input
             class="form-control"
             type="file"
             id="model-file"
-            accept=".stl,.obj"
+            accept=".stl,.obj,.svg"
             required
           />
-          <div class="form-text">Accepted formats: .stl, .obj</div>
+          <div class="form-text">Accepted formats: .stl, .obj, .svg (vector images)</div>
         </div>
         <div class="mb-3">
           <label class="form-label" for="material">Material</label>
