@@ -1,0 +1,14 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #f8f9fa;
+}
+
+.page-hero {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  color: #fff;
+  padding: 2rem 1.5rem;
+  border-radius: 0.75rem;
+}
