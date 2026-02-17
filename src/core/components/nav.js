@@ -121,20 +121,22 @@ export async function initNav(activePage) {
 
   navHost.innerHTML = `
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-      <div class="container-fluid nav-shell position-relative">
+      <div class="container nav-shell position-relative">
         <a class="navbar-brand fw-bold" href="/pages/index.html" style="font-size: 1.5rem;">🖨️ 3D World</a>
         ${mobileProfile}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul class="navbar-nav nav-center-list me-auto mb-2 mb-lg-0">
             ${navItems.map((item) => {
+              const isFirstAdminItem = isAdmin && item.page === "admin";
               const activeClass = item.page === activePage ? "active fw-bold" : "";
-              return `<li class="nav-item"><a class="nav-link ${activeClass}" href="${item.href}">${item.name}</a></li>`;
+              const gapClass = isFirstAdminItem ? "nav-section-gap" : "";
+              return `<li class="nav-item ${gapClass}"><a class="nav-link ${activeClass}" href="${item.href}">${item.name}</a></li>`;
             }).join("")}
           </ul>
-          <ul class="navbar-nav ms-auto d-none d-lg-flex">
+          <ul class="navbar-nav nav-auth-list ms-auto d-none d-lg-flex">
             ${desktopAuthButtons}
           </ul>
         </div>

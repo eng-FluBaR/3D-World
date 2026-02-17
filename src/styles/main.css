@@ -119,13 +119,40 @@ main {
   border-top-color: rgba(102, 126, 234, 0.2);
 }
 
+@media (min-width: 992px) {
+  #app-nav .nav-shell {
+    max-width: 1320px;
+    width: 100%;
+  }
+
+  #app-nav #mainNav {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  #app-nav .nav-center-list {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    width: auto;
+  }
+
+  #app-nav .nav-auth-list {
+    margin-left: auto !important;
+  }
+
+  #app-nav .nav-center-list .nav-section-gap {
+    margin-left: 1.25rem;
+  }
+}
+
 /* ============ Hero Section ============ */
 .page-hero {
   background: var(--gradient-primary);
   color: #fff;
   padding: 4rem 2rem;
   border-radius: 1.5rem;
-  margin-bottom: 3rem;
+  margin: 0 auto 3rem auto;
+  max-width: 800px;
   box-shadow: var(--shadow-lg);
   text-align: center;
   position: relative;
@@ -195,6 +222,13 @@ main {
   color: var(--text-light);
   line-height: 1.7;
   font-size: 1rem;
+}
+
+/* Center card rows */
+.container .row {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ============ Buttons ============ */
