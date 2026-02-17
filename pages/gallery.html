@@ -23,9 +23,15 @@
           <p>Производствени прототипи и готови изделия</p>
         </div>
 
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
           <h2 class="mb-0">Наши реализации</h2>
-          <span class="text-muted">Високо качество и вънимание към детайла</span>
+          <div class="d-flex align-items-center gap-3">
+            <label for="gallery-tag-filter" class="text-muted mb-0">Таг:</label>
+            <select id="gallery-tag-filter" class="form-select form-select-sm" style="min-width: 200px;">
+              <option value="">Всички</option>
+            </select>
+            <span class="text-muted">Високо качество и вънимание към детайла</span>
+          </div>
         </div>
         <div class="row g-4 justify-content-center" id="gallery-projects">
           <div class="col-12">

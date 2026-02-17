@@ -4,6 +4,14 @@ import * as THREE from "three";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
+function extractTags(project) {
+  const category = String(project?.category || "Общи");
+  return category
+    .split(/[;,|]/)
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
 function getModelType(project) {
   if (project?.model_type) {
     return String(project.model_type).toLowerCase();
@@ -20,6 +28,14 @@ function renderEmpty(host) {
   host.innerHTML = `
     <div class="col-12">
       <div class="alert alert-secondary mb-0">Все още няма публикувани завършени проекти.</div>
+    </div>
+  `;
+}
+
+function renderNoFilterMatch(host) {
+  host.innerHTML = `
+    <div class="col-12">
+      <div class="alert alert-secondary mb-0">Няма проекти за избрания таг.</div>
     </div>
   `;
 }
@@ -151,6 +167,7 @@ async function initModelPreview(container) {
 
 onReady(async () => {
   const host = document.getElementById("gallery-projects");
+  const tagFilter = document.getElementById("gallery-tag-filter");
   if (!host) return;
 
   const client = createSupabaseClient();
@@ -171,8 +188,42 @@ onReady(async () => {
     return;
   }
 
-  host.innerHTML = data.map(renderProjectCard).join("");
+  const allProjects = data.map((project) => ({
+    ...project,
+    tags: extractTags(project)
+  }));
 
-  const modelPreviewNodes = Array.from(host.querySelectorAll(".model-preview"));
-  await Promise.all(modelPreviewNodes.map((node) => initModelPreview(node)));
+  const renderProjects = async (projects) => {
+    if (!projects || projects.length === 0) {
+      renderNoFilterMatch(host);
+      return;
+    }
+
+    host.innerHTML = projects.map(renderProjectCard).join("");
+    const modelPreviewNodes = Array.from(host.querySelectorAll(".model-preview"));
+    await Promise.all(modelPreviewNodes.map((node) => initModelPreview(node)));
+  };
+
+  const uniqueTags = Array.from(
+    new Set(
+      allProjects.flatMap((project) => project.tags)
+    )
+  ).sort((a, b) => a.localeCompare(b, "bg"));
+
+  if (tagFilter) {
+    const options = ['<option value="">Всички</option>']
+      .concat(uniqueTags.map((tag) => `<option value="${tag}">${tag}</option>`));
+
+    tagFilter.innerHTML = options.join("");
+    tagFilter.addEventListener("change", async () => {
+      const selectedTag = tagFilter.value;
+      const filteredProjects = selectedTag
+        ? allProjects.filter((project) => project.tags.includes(selectedTag))
+        : allProjects;
+
+      await renderProjects(filteredProjects);
+    });
+  }
+
+  await renderProjects(allProjects);
 });
