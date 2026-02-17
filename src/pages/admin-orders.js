@@ -4,6 +4,60 @@ import { createSupabaseClient } from "../services/supabase.js";
 import { requireAdminRole } from "../utils/role-guards.js";
 
 const STATUS_OPTIONS = ["pending", "quoted", "accepted", "rejected", "completed"];
+const GALLERY_BUCKET = "gallery";
+
+function sanitizeFileName(name) {
+  return (name || "project").replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+function getFileExtension(name) {
+  const lowerName = (name || "").toLowerCase();
+  if (lowerName.endsWith(".stl")) return "stl";
+  if (lowerName.endsWith(".obj")) return "obj";
+  if (lowerName.endsWith(".svg")) return "svg";
+  return "other";
+}
+
+async function publishOrderAssetToGallery(client, order) {
+  if (!order?.file_path) {
+    return {
+      fileUrl: order?.file_url || null,
+      storageBucket: null,
+      storagePath: null
+    };
+  }
+
+  const sourcePath = order.file_path;
+  const originalName = order.file_name || sourcePath.split("/").pop() || "project";
+  const safeName = sanitizeFileName(originalName);
+  const targetPath = `projects/${order.id}-${Date.now()}-${safeName}`;
+
+  const { data: sourceFile, error: downloadError } = await client.storage
+    .from("uploads")
+    .download(sourcePath);
+
+  if (downloadError) {
+    throw downloadError;
+  }
+
+  const { error: uploadError } = await client.storage
+    .from(GALLERY_BUCKET)
+    .upload(targetPath, sourceFile, { upsert: true });
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  const { data: publicData } = client.storage
+    .from(GALLERY_BUCKET)
+    .getPublicUrl(targetPath);
+
+  return {
+    fileUrl: publicData?.publicUrl || null,
+    storageBucket: GALLERY_BUCKET,
+    storagePath: targetPath
+  };
+}
 function getGalleryProject(order) {
   if (!order?.gallery_projects) return null;
   if (Array.isArray(order.gallery_projects)) {
@@ -43,7 +97,7 @@ function renderRow(order) {
           <button class="btn btn-sm btn-primary save-order" data-id="${order.id}">Save</button>
           <button class="btn btn-sm btn-outline-danger delete-order" data-id="${order.id}">Delete</button>
           <button class="btn btn-sm btn-outline-secondary gallery-order" data-id="${order.id}" ${isCompleted ? "" : "disabled"}>
-            ${galleryProject ? "Edit Gallery" : "Add Gallery"}
+            ${galleryProject ? "Update Gallery" : "Add Gallery"}
           </button>
           <button class="btn btn-sm btn-outline-dark remove-gallery-order" data-id="${order.id}" ${galleryProject ? "" : "disabled"}>
             Remove Gallery
@@ -93,7 +147,7 @@ onReady(async () => {
         price,
         deadline,
         profiles:user_id(*),
-        gallery_projects(id, category, short_description, is_visible)
+        gallery_projects(id, category, short_description, is_visible, storage_bucket, storage_path, file_url, model_type)
       `
       )
       .order("created_at", { ascending: false });
@@ -223,20 +277,33 @@ onReady(async () => {
 
         btn.disabled = true;
 
+        let publishedAsset;
+
+        try {
+          publishedAsset = await publishOrderAssetToGallery(client, order);
+        } catch (publishError) {
+          btn.disabled = false;
+          alert(publishError?.message || "Неуспешно публикуване на файла в галерията.");
+          return;
+        }
+
         const payload = {
           request_id: order.id,
           file_name: order.file_name || order.file_path || "Проект",
-          file_url: order.file_url || null,
+          file_url: publishedAsset?.fileUrl || order.file_url || null,
           category: categoryInput.trim() || "Общи",
           short_description: descriptionInput.trim() || "",
           is_visible: true,
-          created_by: adminUserId
+          created_by: adminUserId,
+          storage_bucket: publishedAsset?.storageBucket || null,
+          storage_path: publishedAsset?.storagePath || null,
+          model_type: getFileExtension(order.file_name || order.file_path || "")
         };
 
         const { data, error } = await client
           .from("gallery_projects")
           .upsert(payload, { onConflict: "request_id" })
-          .select("id, category, short_description, is_visible")
+          .select("id, category, short_description, is_visible, storage_bucket, storage_path, file_url, model_type")
           .single();
 
         if (error) {
@@ -273,6 +340,12 @@ onReady(async () => {
         }
 
         btn.disabled = true;
+
+        if (existingGalleryProject.storage_bucket && existingGalleryProject.storage_path) {
+          await client.storage
+            .from(existingGalleryProject.storage_bucket)
+            .remove([existingGalleryProject.storage_path]);
+        }
 
         const { error } = await client
           .from("gallery_projects")
