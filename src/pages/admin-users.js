@@ -1,5 +1,5 @@
 import { onReady } from "../utils/dom.js";
-import { signOut } from "../services/auth.js";
+import { getSession, signOut } from "../services/auth.js";
 import { createSupabaseClient } from "../services/supabase.js";
 import { requireSuperAdmin } from "../utils/role-guards.js";
 
@@ -26,22 +26,24 @@ function renderRow(user) {
 
   const toggleButtonText = user.is_disabled ? "Enable" : "Disable";
   const toggleButtonClass = user.is_disabled ? "btn-warning" : "btn-outline-danger";
+  const userKey = user.user_id;
 
   return `
-    <tr data-id="${user.id}">
+    <tr data-id="${userKey}">
       <td>${user.email || "-"}</td>
       <td>
-        <select class="form-select form-select-sm role-select" data-id="${user.id}">
+        <select class="form-select form-select-sm role-select" data-id="${userKey}">
           ${roleSelect}
         </select>
       </td>
       <td>${getStatusBadge(user.is_disabled)}</td>
       <td>${formatDate(user.created_at)}</td>
       <td class="text-end">
-        <button class="btn btn-sm ${toggleButtonClass} toggle-user" data-id="${user.id}">
+        <button class="btn btn-sm ${toggleButtonClass} toggle-user" data-id="${userKey}">
           ${toggleButtonText}
         </button>
-        <button class="btn btn-sm btn-primary save-user" data-id="${user.id}">Save</button>
+        <button class="btn btn-sm btn-outline-danger delete-user" data-id="${userKey}">Delete</button>
+        <button class="btn btn-sm btn-primary save-user" data-id="${userKey}">Save</button>
       </td>
     </tr>
   `;
@@ -65,6 +67,9 @@ onReady(async () => {
     return;
   }
 
+  const session = await getSession();
+  const currentUserId = session?.user?.id || null;
+
   const client = createSupabaseClient();
   let allUsers = [];
   const userStates = {}; // Track pending changes
@@ -72,7 +77,7 @@ onReady(async () => {
   const loadUsers = async () => {
     const { data, error } = await client
       .from("profiles")
-      .select("id, email, role, is_disabled, created_at")
+      .select("user_id, email, role, is_disabled, created_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -97,7 +102,12 @@ onReady(async () => {
       btn.addEventListener("click", () => {
         const userId = btn.getAttribute("data-id");
         const row = body.querySelector(`tr[data-id="${userId}"]`);
-        const user = allUsers.find((u) => u.id === userId);
+        const user = allUsers.find((u) => u.user_id === userId);
+
+        if (currentUserId && userId === currentUserId) {
+          alert("Не можете да блокирате собствения си профил.");
+          return;
+        }
 
         if (!userStates[userId]) {
           userStates[userId] = { ...user };
@@ -127,23 +137,28 @@ onReady(async () => {
           return;
         }
 
-        const state = userStates[userId] || allUsers.find((u) => u.id === userId);
+        const state = userStates[userId] || allUsers.find((u) => u.user_id === userId);
         const updatePayload = {
           role,
           is_disabled: state.is_disabled || false
         };
+
+        if (currentUserId && userId === currentUserId && updatePayload.is_disabled) {
+          alert("Не можете да блокирате собствения си профил.");
+          return;
+        }
 
         btn.disabled = true;
 
         const { error } = await client
           .from("profiles")
           .update(updatePayload)
-          .eq("id", userId);
+          .eq("user_id", userId);
 
         if (error) {
           alert(error.message);
         } else {
-          const userIndex = allUsers.findIndex((u) => u.id === userId);
+          const userIndex = allUsers.findIndex((u) => u.user_id === userId);
           if (userIndex !== -1) {
             allUsers[userIndex] = { ...allUsers[userIndex], ...updatePayload };
             userStates[userId] = { ...allUsers[userIndex] };
@@ -151,6 +166,46 @@ onReady(async () => {
         }
 
         btn.disabled = false;
+      });
+    });
+
+    body.querySelectorAll(".delete-user").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const userId = btn.getAttribute("data-id");
+        if (!userId) return;
+
+        if (currentUserId && userId === currentUserId) {
+          alert("Не можете да изтриете собствения си профил.");
+          return;
+        }
+
+        const shouldDelete = window.confirm("Сигурни ли сте, че искате да изтриете този профил?");
+        if (!shouldDelete) {
+          return;
+        }
+
+        btn.disabled = true;
+
+        const { error } = await client
+          .from("profiles")
+          .delete()
+          .eq("user_id", userId);
+
+        if (error) {
+          btn.disabled = false;
+          alert(error.message);
+          return;
+        }
+
+        allUsers = allUsers.filter((user) => user.user_id !== userId);
+        delete userStates[userId];
+
+        if (allUsers.length === 0) {
+          renderEmptyState(body);
+        } else {
+          body.innerHTML = allUsers.map(renderRow).join("");
+          attachEventListeners();
+        }
       });
     });
   };
