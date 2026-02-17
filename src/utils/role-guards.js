@@ -16,7 +16,7 @@ export async function requireAdminRole() {
   const { data, error } = await client
     .from("profiles")
     .select("role")
-    .eq("id", userId)
+    .eq("user_id", userId)
     .single();
 
   if (error || !data) {
@@ -46,7 +46,7 @@ export async function requireSuperAdmin() {
   const { data, error } = await client
     .from("profiles")
     .select("role")
-    .eq("id", userId)
+    .eq("user_id", userId)
     .single();
 
   if (error || !data) {

@@ -37,7 +37,10 @@ function renderRow(order) {
         <input type="date" class="form-control form-control-sm deadline-input" value="${order.deadline || ""}" data-id="${order.id}" />
       </td>
       <td class="text-end">
-        <button class="btn btn-sm btn-primary save-order" data-id="${order.id}">Save</button>
+        <div class="d-inline-flex gap-2">
+          <button class="btn btn-sm btn-primary save-order" data-id="${order.id}">Save</button>
+          <button class="btn btn-sm btn-outline-danger delete-order" data-id="${order.id}">Delete</button>
+        </div>
       </td>
     </tr>
   `;
@@ -155,6 +158,31 @@ onReady(async () => {
         }
 
         btn.disabled = false;
+      });
+    });
+
+    body.querySelectorAll(".delete-order").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const orderId = btn.getAttribute("data-id");
+        if (!orderId) return;
+
+        const shouldDelete = window.confirm("Сигурни ли сте, че искате да изтриете тази заявка?");
+        if (!shouldDelete) {
+          return;
+        }
+
+        btn.disabled = true;
+
+        const { error } = await client.from("requests").delete().eq("id", orderId);
+
+        if (error) {
+          btn.disabled = false;
+          alert(error.message);
+          return;
+        }
+
+        allOrders = allOrders.filter((order) => order.id !== orderId);
+        applyFilter();
       });
     });
   };
