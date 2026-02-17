@@ -32,24 +32,8 @@
 
       <div class="card shadow-sm">
         <div class="card-body">
-          <div class="table-responsive">
-            <table class="table align-middle mb-0">
-              <thead class="table-light">
-                <tr>
-                  <th scope="col">User</th>
-                  <th scope="col">File</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Deadline</th>
-                  <th scope="col" class="text-end">Action</th>
-                </tr>
-              </thead>
-              <tbody id="orders-body">
-                <tr>
-                  <td colspan="6" class="text-muted">Loading orders...</td>
-                </tr>
-              </tbody>
-            </table>
+          <div id="orders-body" class="orders-grid">
+            <div class="orders-empty text-muted">Loading orders...</div>
           </div>
         </div>
       </div>

@@ -412,6 +412,105 @@ a:hover {
   border-color: var(--border-color);
 }
 
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.orders-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1.25rem;
+}
+
+.order-card {
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+}
+
+.order-card-top {
+  margin-bottom: 0.85rem;
+}
+
+.order-user {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.order-file {
+  margin-top: 0.2rem;
+}
+
+.order-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.order-field-full {
+  grid-column: 1 / -1;
+}
+
+.order-field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-bottom: 0.35rem;
+}
+
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.order-actions .btn {
+  flex: 1 1 135px;
+}
+
+.order-card .status-select {
+  min-width: 130px;
+  font-weight: 700;
+  border-width: 2px;
+  text-transform: capitalize;
+}
+
+.order-card .status-select.status-pending {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #7c4a03;
+}
+
+.order-card .status-select.status-quoted {
+  background-color: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.45);
+  color: #1e3a8a;
+}
+
+.order-card .status-select.status-accepted {
+  background-color: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #065f46;
+}
+
+.order-card .status-select.status-rejected {
+  background-color: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #991b1b;
+}
+
+.order-card .status-select.status-completed {
+  background-color: rgba(99, 102, 241, 0.14);
+  border-color: rgba(99, 102, 241, 0.45);
+  color: #3730a3;
+}
+
 /* ============ Footer ============ */
 footer {
   background: var(--gradient-primary) !important;
@@ -566,6 +665,28 @@ footer a:hover {
   .card:hover {
     transform: none;
     box-shadow: var(--shadow-sm);
+  }
+
+  .orders-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .order-field-full {
+    grid-column: auto;
+  }
+
+  .order-card .status-select,
+  .order-card .price-input,
+  .order-card .deadline-input {
+    width: 100%;
+  }
+
+  .order-actions .btn {
+    flex: 1 1 100%;
   }
 }
 

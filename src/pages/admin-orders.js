@@ -4,6 +4,13 @@ import { createSupabaseClient } from "../services/supabase.js";
 import { requireAdminRole } from "../utils/role-guards.js";
 
 const STATUS_OPTIONS = ["pending", "quoted", "accepted", "rejected", "completed"];
+const STATUS_LABELS = {
+  pending: "Pending",
+  quoted: "Quoted",
+  accepted: "Accepted",
+  rejected: "Rejected",
+  completed: "Completed"
+};
 const GALLERY_BUCKET = "gallery";
 
 function sanitizeFileName(name) {
@@ -70,7 +77,7 @@ function renderRow(order) {
   const galleryProject = getGalleryProject(order);
   const isCompleted = order.status === "completed";
   const statusSelect = STATUS_OPTIONS.map(
-    (s) => `<option value="${s}" ${order.status === s ? "selected" : ""}>${s}</option>`
+    (s) => `<option value="${s}" ${order.status === s ? "selected" : ""}>${STATUS_LABELS[s] || s}</option>`
   ).join("");
 
   const fileLink = order.file_url
@@ -78,41 +85,48 @@ function renderRow(order) {
     : `<small class="text-muted">${order.file_name || order.file_path || "-"}</small>`;
 
   return `
-    <tr data-id="${order.id}">
-      <td>${order.user_email || "-"}</td>
-      <td>${fileLink}</td>
-      <td>
-        <select class="form-select form-select-sm status-select" data-id="${order.id}">
-          ${statusSelect}
-        </select>
-      </td>
-      <td>
-        <input type="number" class="form-control form-control-sm price-input" value="${order.price || ""}" placeholder="0.00" data-id="${order.id}" />
-      </td>
-      <td>
-        <input type="date" class="form-control form-control-sm deadline-input" value="${order.deadline || ""}" data-id="${order.id}" />
-      </td>
-      <td class="text-end">
-        <div class="d-inline-flex gap-2">
-          <button class="btn btn-sm btn-primary save-order" data-id="${order.id}">Save</button>
-          <button class="btn btn-sm btn-outline-danger delete-order" data-id="${order.id}">Delete</button>
-          <button class="btn btn-sm btn-outline-secondary gallery-order" data-id="${order.id}" ${isCompleted ? "" : "disabled"}>
-            ${galleryProject ? "Update Gallery" : "Add Gallery"}
-          </button>
-          <button class="btn btn-sm btn-outline-dark remove-gallery-order" data-id="${order.id}" ${galleryProject ? "" : "disabled"}>
-            Remove Gallery
-          </button>
+    <article class="order-card" data-id="${order.id}">
+      <div class="order-card-top">
+        <div class="order-user">${order.user_email || "-"}</div>
+        <div class="order-file">${fileLink}</div>
+      </div>
+
+      <div class="order-fields">
+        <div class="order-field">
+          <label>Status</label>
+          <select class="form-select form-select-sm status-select status-${order.status}" data-id="${order.id}">
+            ${statusSelect}
+          </select>
         </div>
-      </td>
-    </tr>
+
+        <div class="order-field">
+          <label>Price</label>
+          <input type="number" class="form-control form-control-sm price-input" value="${order.price || ""}" placeholder="0.00" data-id="${order.id}" />
+        </div>
+
+        <div class="order-field order-field-full">
+          <label>Deadline</label>
+          <input type="date" class="form-control form-control-sm deadline-input" value="${order.deadline || ""}" data-id="${order.id}" />
+        </div>
+      </div>
+
+      <div class="order-actions">
+        <button class="btn btn-sm btn-primary save-order" data-id="${order.id}">Save</button>
+        <button class="btn btn-sm btn-outline-danger delete-order" data-id="${order.id}">Delete</button>
+        <button class="btn btn-sm btn-outline-secondary gallery-order" data-id="${order.id}" ${isCompleted ? "" : "disabled"}>
+          ${galleryProject ? "Update Gallery" : "Add Gallery"}
+        </button>
+        <button class="btn btn-sm btn-outline-dark remove-gallery-order" data-id="${order.id}" ${galleryProject ? "" : "disabled"}>
+          Remove Gallery
+        </button>
+      </div>
+    </article>
   `;
 }
 
 function renderEmptyState(body) {
   body.innerHTML = `
-    <tr>
-      <td colspan="6" class="text-muted">No orders found.</td>
-    </tr>
+    <div class="orders-empty text-muted">No orders found.</div>
   `;
 }
 
@@ -188,10 +202,17 @@ onReady(async () => {
   };
 
   const attachEventListeners = () => {
+    body.querySelectorAll(".status-select").forEach((select) => {
+      select.addEventListener("change", () => {
+        STATUS_OPTIONS.forEach((status) => select.classList.remove(`status-${status}`));
+        select.classList.add(`status-${select.value}`);
+      });
+    });
+
     body.querySelectorAll(".save-order").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const orderId = btn.getAttribute("data-id");
-        const row = body.querySelector(`tr[data-id="${orderId}"]`);
+        const row = body.querySelector(`.order-card[data-id="${orderId}"]`);
 
         const status = row.querySelector(".status-select")?.value || "";
         const price = row.querySelector(".price-input")?.value || null;
