@@ -1,18 +1,20 @@
 import { onReady } from "../utils/dom.js";
-import { signOut } from "../services/auth.js";
+import { getSession, signOut } from "../services/auth.js";
 import { createSupabaseClient } from "../services/supabase.js";
 import { requireAdminRole } from "../utils/role-guards.js";
 
 const STATUS_OPTIONS = ["pending", "quoted", "accepted", "rejected", "completed"];
-const STATUS_COLORS = {
-  pending: "secondary",
-  quoted: "warning",
-  accepted: "primary",
-  rejected: "danger",
-  completed: "success"
-};
+function getGalleryProject(order) {
+  if (!order?.gallery_projects) return null;
+  if (Array.isArray(order.gallery_projects)) {
+    return order.gallery_projects[0] || null;
+  }
+  return order.gallery_projects;
+}
 
 function renderRow(order) {
+  const galleryProject = getGalleryProject(order);
+  const isCompleted = order.status === "completed";
   const statusSelect = STATUS_OPTIONS.map(
     (s) => `<option value="${s}" ${order.status === s ? "selected" : ""}>${s}</option>`
   ).join("");
@@ -40,6 +42,12 @@ function renderRow(order) {
         <div class="d-inline-flex gap-2">
           <button class="btn btn-sm btn-primary save-order" data-id="${order.id}">Save</button>
           <button class="btn btn-sm btn-outline-danger delete-order" data-id="${order.id}">Delete</button>
+          <button class="btn btn-sm btn-outline-secondary gallery-order" data-id="${order.id}" ${isCompleted ? "" : "disabled"}>
+            ${galleryProject ? "Edit Gallery" : "Add Gallery"}
+          </button>
+          <button class="btn btn-sm btn-outline-dark remove-gallery-order" data-id="${order.id}" ${galleryProject ? "" : "disabled"}>
+            Remove Gallery
+          </button>
         </div>
       </td>
     </tr>
@@ -65,6 +73,9 @@ onReady(async () => {
     return;
   }
 
+  const session = await getSession();
+  const adminUserId = session?.user?.id || null;
+
   const client = createSupabaseClient();
   let allOrders = [];
 
@@ -81,7 +92,8 @@ onReady(async () => {
         status,
         price,
         deadline,
-        profiles:user_id(*)
+        profiles:user_id(*),
+        gallery_projects(id, category, short_description, is_visible)
       `
       )
       .order("created_at", { ascending: false });
@@ -182,6 +194,103 @@ onReady(async () => {
         }
 
         allOrders = allOrders.filter((order) => order.id !== orderId);
+        applyFilter();
+      });
+    });
+
+    body.querySelectorAll(".gallery-order").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const orderId = btn.getAttribute("data-id");
+        if (!orderId) return;
+
+        const order = allOrders.find((item) => item.id === orderId);
+        if (!order) return;
+
+        if (order.status !== "completed") {
+          alert("Само завършени проекти могат да се показват в галерията.");
+          return;
+        }
+
+        const existingGalleryProject = getGalleryProject(order);
+        const categoryInput = window.prompt("Категория на проекта:", existingGalleryProject?.category || "");
+        if (categoryInput === null) return;
+
+        const descriptionInput = window.prompt(
+          "Кратко описание на проекта:",
+          existingGalleryProject?.short_description || ""
+        );
+        if (descriptionInput === null) return;
+
+        btn.disabled = true;
+
+        const payload = {
+          request_id: order.id,
+          file_name: order.file_name || order.file_path || "Проект",
+          file_url: order.file_url || null,
+          category: categoryInput.trim() || "Общи",
+          short_description: descriptionInput.trim() || "",
+          is_visible: true,
+          created_by: adminUserId
+        };
+
+        const { data, error } = await client
+          .from("gallery_projects")
+          .upsert(payload, { onConflict: "request_id" })
+          .select("id, category, short_description, is_visible")
+          .single();
+
+        if (error) {
+          btn.disabled = false;
+          alert(error.message);
+          return;
+        }
+
+        allOrders = allOrders.map((item) =>
+          item.id === order.id
+            ? { ...item, gallery_projects: data ? [data] : [] }
+            : item
+        );
+
+        applyFilter();
+      });
+    });
+
+    body.querySelectorAll(".remove-gallery-order").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const orderId = btn.getAttribute("data-id");
+        if (!orderId) return;
+
+        const order = allOrders.find((item) => item.id === orderId);
+        const existingGalleryProject = getGalleryProject(order);
+
+        if (!existingGalleryProject?.id) {
+          return;
+        }
+
+        const shouldRemove = window.confirm("Да премахна ли проекта от галерията?");
+        if (!shouldRemove) {
+          return;
+        }
+
+        btn.disabled = true;
+
+        const { error } = await client
+          .from("gallery_projects")
+          .delete()
+          .eq("id", existingGalleryProject.id);
+
+        if (error) {
+          btn.disabled = false;
+          alert(error.message);
+          return;
+        }
+
+        allOrders = allOrders.map((item) =>
+          item.id === order.id
+            ? { ...item, gallery_projects: [] }
+            : item
+        );
+
         applyFilter();
       });
     });
