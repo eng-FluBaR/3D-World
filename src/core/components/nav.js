@@ -71,6 +71,9 @@ export async function initNav(activePage) {
 
   const isAuthenticated = userInfo !== null;
   const isAdmin = userInfo?.role === "super_admin" || userInfo?.role === "moderator";
+  const userModePages = ["dashboard", "upload", "requests", "profile"];
+  const isUserModeActive = userModePages.includes(activePage);
+  const userModeActiveClass = isUserModeActive ? "active fw-bold" : "";
 
   console.log('[NAV] Is authenticated:', isAuthenticated);
   console.log('[NAV] Is admin:', isAdmin);
@@ -90,7 +93,7 @@ export async function initNav(activePage) {
 
   const desktopAuthButtons = isAuthenticated
     ? `<li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+         <a class="nav-link dropdown-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
            👤 ${userInfo.name}
          </a>
          <ul class="dropdown-menu dropdown-menu-end">
@@ -106,7 +109,7 @@ export async function initNav(activePage) {
   const mobileProfile = isAuthenticated
     ? `<div class="mobile-profile-slot d-lg-none">
          <div class="dropdown">
-           <a class="nav-link dropdown-toggle mobile-profile-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+           <a class="nav-link dropdown-toggle mobile-profile-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
              👤 ${userInfo.name}
            </a>
            <ul class="dropdown-menu dropdown-menu-end">
