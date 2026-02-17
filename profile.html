@@ -43,6 +43,42 @@
             <button class="btn btn-primary btn-lg w-100" type="submit" id="profile-submit">Запази промените</button>
           </div>
         </form>
+
+        <div class="row g-4 mt-1">
+          <div class="col-lg-6">
+            <div class="card shadow h-100">
+              <div class="card-body">
+                <h5 class="card-title mb-3">Бързи действия</h5>
+                <p class="text-muted mb-4">Функциите от панела са достъпни директно тук.</p>
+                <div class="d-grid gap-2">
+                  <a class="btn btn-outline-primary" href="/upload.html">Качване на проект</a>
+                  <a class="btn btn-outline-secondary" href="/requests.html">Преглед на заявките</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card shadow h-100">
+              <div class="card-body">
+                <h5 class="card-title mb-3">Статистика на проектите</h5>
+                <div class="row g-3">
+                  <div class="col-6">
+                    <div class="border rounded-4 p-3 h-100">
+                      <div class="text-muted small">Качени проекти</div>
+                      <div class="h3 mb-0" id="stat-total-projects">0</div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="border rounded-4 p-3 h-100">
+                      <div class="text-muted small">Готови проекти</div>
+                      <div class="h3 mb-0 text-success" id="stat-completed-projects">0</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     <script type="module" src="/src/main.js"></script>

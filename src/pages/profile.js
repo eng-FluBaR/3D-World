@@ -22,6 +22,8 @@ onReady(async () => {
   const successBox = document.getElementById("profile-success");
   const submitButton = document.getElementById("profile-submit");
   const logoutButton = document.getElementById("logout-button");
+  const totalProjectsEl = document.getElementById("stat-total-projects");
+  const completedProjectsEl = document.getElementById("stat-completed-projects");
 
   const session = await getSession();
   if (!session) {
@@ -40,7 +42,7 @@ onReady(async () => {
     const { data, error } = await client
       .from("profiles")
       .select("display_name")
-      .eq("id", userId)
+      .eq("user_id", userId)
       .single();
 
     if (error && error.code !== "PGRST116") {
@@ -55,6 +57,31 @@ onReady(async () => {
 
   await loadProfile();
 
+  const loadStats = async () => {
+    const { data, error } = await client
+      .from("requests")
+      .select("status")
+      .eq("user_id", userId);
+
+    if (error) {
+      console.warn("Could not load project stats:", error.message);
+      return;
+    }
+
+    const totalProjects = data?.length || 0;
+    const completedProjects = (data || []).filter((item) => item.status === "completed").length;
+
+    if (totalProjectsEl) {
+      totalProjectsEl.textContent = String(totalProjects);
+    }
+
+    if (completedProjectsEl) {
+      completedProjectsEl.textContent = String(completedProjects);
+    }
+  };
+
+  await loadStats();
+
   if (form) {
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -68,11 +95,11 @@ onReady(async () => {
       try {
         const { error } = await client.from("profiles").upsert(
           {
-            id: userId,
+            user_id: userId,
             email: session.user?.email || "",
             display_name: displayName
           },
-          { onConflict: "id" }
+          { onConflict: "user_id" }
         );
 
         if (error) {

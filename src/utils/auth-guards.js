@@ -1,15 +1,1 @@
-import { getSession } from "../services/auth.js";
-
-export async function redirectIfAuthenticated() {
-  const session = await getSession();
-  if (session) {
-    window.location.replace("/dashboard.html");
-  }
-}
-
-export async function requireAuth() {
-  const session = await getSession();
-  if (!session) {
-    window.location.replace("/login.html");
-  }
-}
+export * from "../core/utils/auth-guards.js";

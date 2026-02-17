@@ -1,8 +1,8 @@
-import { onReady, getPageName } from "./utils/dom.js";
-import { initNav } from "./components/nav.js";
-import { ensureSupabaseConfig } from "./services/supabase.js";
-import { requireAuth, redirectIfAuthenticated } from "./utils/auth-guards.js";
-import { requireAdminRole } from "./utils/role-guards.js";
+import { onReady, getPageName } from "./core/utils/dom.js";
+import { initNav } from "./core/components/nav.js";
+import { ensureSupabaseConfig } from "./core/services/supabase.js";
+import { requireAuth, redirectIfAuthenticated } from "./core/utils/auth-guards.js";
+import { requireAdminRole } from "./core/utils/role-guards.js";
 
 onReady(async () => {
   const page = getPageName();
