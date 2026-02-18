@@ -28,6 +28,18 @@ const MODERATOR_NAV_ITEMS = [
   { name: "Материали", href: "/admin-materials.html", page: "admin-materials" }
 ];
 
+function getRoleLabel(role) {
+  if (role === "super_admin") return "Админ";
+  if (role === "moderator") return "Модератор";
+  return "";
+}
+
+function getRoleBadgeClass(role) {
+  if (role === "super_admin") return "text-bg-warning text-dark";
+  if (role === "moderator") return "text-bg-info";
+  return "text-bg-secondary";
+}
+
 async function getUserRole() {
   try {
     const session = await getSession();
@@ -86,29 +98,37 @@ export async function initNav(activePage) {
   console.log('[NAV] Is authenticated:', isAuthenticated);
   console.log('[NAV] Is admin:', isAdmin);
 
-  let navItems = [...PUBLIC_NAV_ITEMS];
+  const navItems = [...PUBLIC_NAV_ITEMS];
 
-  if (isAuthenticated) {
-    navItems = [...PUBLIC_NAV_ITEMS];
-    if (isSuperAdmin) {
-      navItems = [...navItems, ...SUPER_ADMIN_NAV_ITEMS];
-    } else if (isModerator) {
-      navItems = [...navItems, ...MODERATOR_NAV_ITEMS];
-    }
-  }
+  const adminMenuItems = isSuperAdmin
+    ? SUPER_ADMIN_NAV_ITEMS
+    : isModerator
+      ? MODERATOR_NAV_ITEMS
+      : [];
+
+  const roleLabel = getRoleLabel(userInfo?.role);
+  const roleBadgeClass = getRoleBadgeClass(userInfo?.role);
+  const userDisplayName = userInfo?.name || "";
+  const roleBadge = roleLabel
+    ? `<span class="badge ${roleBadgeClass} ms-1 align-middle">${roleLabel}</span>`
+    : "";
 
   const userMenuItems = USER_NAV_ITEMS.map(
+    (item) => `<li><a class="dropdown-item" href="${item.href}">${item.name}</a></li>`
+  ).join("");
+
+  const adminDropdownItems = adminMenuItems.map(
     (item) => `<li><a class="dropdown-item" href="${item.href}">${item.name}</a></li>`
   ).join("");
 
   const desktopAuthButtons = isAuthenticated
     ? `<li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-           👤 ${userInfo.name}
+           👤 ${userDisplayName} ${roleBadge}
          </a>
          <ul class="dropdown-menu dropdown-menu-end">
            ${userMenuItems}
-           ${isSuperAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
+           ${adminMenuItems.length > 0 ? '<li><hr class="dropdown-divider"></li>' + adminDropdownItems : ''}
            <li><hr class="dropdown-divider"></li>
            <li><a class="dropdown-item" href="#" id="logout-btn-desktop">Изход</a></li>
          </ul>
@@ -120,11 +140,11 @@ export async function initNav(activePage) {
     ? `<div class="mobile-profile-slot d-lg-none">
          <div class="dropdown">
            <a class="nav-link dropdown-toggle mobile-profile-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-             👤 ${userInfo.name}
+             👤 ${userDisplayName} ${roleBadge}
            </a>
            <ul class="dropdown-menu dropdown-menu-end">
              ${userMenuItems}
-             ${isSuperAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
+             ${adminMenuItems.length > 0 ? '<li><hr class="dropdown-divider"></li>' + adminDropdownItems : ''}
              <li><hr class="dropdown-divider"></li>
              <li><a class="dropdown-item" href="#" id="logout-btn-mobile">Изход</a></li>
            </ul>
@@ -143,10 +163,8 @@ export async function initNav(activePage) {
         <div class="collapse navbar-collapse" id="mainNav">
           <ul class="navbar-nav nav-center-list me-auto mb-2 mb-lg-0">
             ${navItems.map((item) => {
-              const isFirstAdminItem = isSuperAdmin && item.page === "admin";
               const activeClass = item.page === activePage ? "active fw-bold" : "";
-              const gapClass = isFirstAdminItem ? "nav-section-gap" : "";
-              return `<li class="nav-item ${gapClass}"><a class="nav-link ${activeClass}" href="${item.href}">${item.name}</a></li>`;
+              return `<li class="nav-item"><a class="nav-link ${activeClass}" href="${item.href}">${item.name}</a></li>`;
             }).join("")}
           </ul>
           <ul class="navbar-nav nav-auth-list ms-auto d-none d-lg-flex">
