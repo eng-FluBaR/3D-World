@@ -2,10 +2,20 @@ import { onReady } from "../utils/dom.js";
 import { createSupabaseClient } from "../services/supabase.js";
 import { getSession } from "../services/auth.js";
 
+let successTimeoutId;
+
 function showSuccess(messageHost, text) {
   if (!messageHost) return;
   messageHost.textContent = text;
   messageHost.classList.remove("d-none");
+
+  if (successTimeoutId) {
+    window.clearTimeout(successTimeoutId);
+  }
+
+  successTimeoutId = window.setTimeout(() => {
+    messageHost.classList.add("d-none");
+  }, 4500);
 }
 
 function hideSuccess(messageHost) {
@@ -55,9 +65,9 @@ onReady(async () => {
       return;
     }
 
-    form.classList.add("was-validated");
-    showSuccess(successMessage, "Благодарим! Запитването е изпратено успешно.");
+    showSuccess(successMessage, "Благодарим ви, че проявихте интерес към услугите на 3D World! Ще се свържем с вас възможно най-скоро.");
     form.reset();
+    form.classList.remove("was-validated");
 
     if (submitButton) submitButton.disabled = false;
   });

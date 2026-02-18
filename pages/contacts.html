@@ -15,6 +15,12 @@
   </head>
   <body data-page="contacts">
     <div id="app-nav"></div>
+    <div
+      class="alert alert-success d-none position-fixed top-0 start-50 translate-middle-x mt-4 shadow-sm"
+      id="form-success"
+      role="status"
+      style="z-index: 1080; max-width: min(92vw, 720px);"
+    ></div>
 
     <main class="flex-grow-1">
       <div class="container py-5">
@@ -58,9 +64,6 @@
                 <div class="invalid-feedback">Please share a short project description.</div>
               </div>
               <button class="btn btn-primary" type="submit">Send Request</button>
-              <p class="small text-success mt-3 mb-0 d-none" id="form-success">
-                Thanks! Your message is ready. We will reply within 24 hours.
-              </p>
             </form>
           </div>
         </div>
