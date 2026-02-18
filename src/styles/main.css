@@ -481,6 +481,83 @@ a:hover {
   word-break: break-word;
 }
 
+.task-toggle-btn {
+  border: 2px solid #cfd4dc;
+  background-color: #fff;
+  color: #334155;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.task-toggle-btn:hover {
+  border-color: #94a3b8;
+  background-color: #f8fafc;
+}
+
+.task-toggle-btn.is-active {
+  background: var(--gradient-primary);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 14px rgba(102, 126, 234, 0.25);
+}
+
+.upload-page-container {
+  max-width: 680px;
+}
+
+.upload-hero {
+  padding: 1.2rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.upload-form-card {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.upload-form-card .card-body {
+  padding: 0.72rem;
+}
+
+.upload-form-card .form-label {
+  font-size: 0.88rem;
+  margin-bottom: 0.2rem;
+}
+
+.upload-form-card .form-text {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.upload-form-card .form-control,
+.upload-form-card .form-select {
+  padding: 0.48rem 0.72rem;
+  border-radius: 0.6rem;
+  font-size: 0.92rem;
+}
+
+.upload-form-card #notes {
+  min-height: 80px;
+}
+
+.upload-inline-fields .form-text {
+  line-height: 1.1;
+  margin-top: 0.15rem;
+}
+
+.upload-inline-material {
+  max-width: 420px;
+}
+
+.upload-inline-quantity {
+  max-width: 160px;
+}
+
+.upload-form-card .btn-lg {
+  padding: 0.75rem 1.2rem;
+}
+
 .gallery-admin-editable {
   cursor: pointer;
   border: 1px solid rgba(17, 24, 39, 0.08);
@@ -798,6 +875,44 @@ footer a:hover {
   .order-actions .btn {
     flex: 1 1 100%;
   }
+
+  .upload-page-container {
+    padding-top: 0.8rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .upload-hero {
+    padding: 0.95rem 0.8rem;
+    border-radius: 0.9rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .upload-hero h1 {
+    font-size: 1.45rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .upload-hero p {
+    font-size: 0.9rem;
+  }
+
+  .upload-form-card .card-body {
+    padding: 0.62rem;
+  }
+
+  .upload-form-card .mb-3 {
+    margin-bottom: 0.45rem !important;
+  }
+
+  .upload-form-card textarea.form-control {
+    min-height: 68px;
+  }
+
+  .upload-form-card .form-control,
+  .upload-form-card .form-select {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.88rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -822,5 +937,32 @@ footer a:hover {
   .form-control,
   .form-select {
     padding: 0.75rem 1rem;
+  }
+
+  .upload-page-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.8rem !important;
+  }
+
+  .upload-hero {
+    padding: 0.75rem 0.62rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .upload-hero h1 {
+    font-size: 1.12rem;
+  }
+
+  .upload-hero p {
+    font-size: 0.78rem;
+  }
+
+  .upload-form-card .card-body {
+    padding: 0.56rem;
+  }
+
+  .upload-form-card .btn-lg {
+    padding: 0.56rem 0.9rem;
+    font-size: 0.88rem;
   }
 }

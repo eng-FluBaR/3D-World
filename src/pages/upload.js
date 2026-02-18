@@ -3,6 +3,7 @@ import { createSupabaseClient } from "../services/supabase.js";
 import { getSession } from "../services/auth.js";
 
 const STORAGE_BUCKET = "uploads";
+const SERVICE_OPTIONS = ["scan", "model", "print"];
 
 function showMessage(element, message) {
   if (!element) return;
@@ -110,6 +111,38 @@ onReady(() => {
   const errorBox = document.getElementById("upload-error");
   const successBox = document.getElementById("upload-success");
   const submitButton = document.getElementById("upload-submit");
+  const serviceOptionsHost = document.getElementById("service-options");
+
+  const selectedServices = new Set();
+
+  const refreshServiceButtons = () => {
+    if (!serviceOptionsHost) return;
+
+    serviceOptionsHost.querySelectorAll(".task-toggle-btn").forEach((button) => {
+      const serviceKey = button.getAttribute("data-service") || "";
+      const isActive = selectedServices.has(serviceKey);
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+  };
+
+  serviceOptionsHost?.addEventListener("click", (event) => {
+    const button = event.target.closest(".task-toggle-btn");
+    if (!button) return;
+
+    const serviceKey = button.getAttribute("data-service") || "";
+    if (!SERVICE_OPTIONS.includes(serviceKey)) return;
+
+    if (selectedServices.has(serviceKey)) {
+      selectedServices.delete(serviceKey);
+    } else {
+      selectedServices.add(serviceKey);
+    }
+
+    refreshServiceButtons();
+  });
+
+  refreshServiceButtons();
 
   if (!form) return;
 
@@ -133,6 +166,7 @@ onReady(() => {
     const material = materialSelect?.value || "";
     const quantity = Number.parseInt(quantityInput?.value, 10);
     const notes = notesInput?.value?.trim() || "";
+    const serviceOptions = Array.from(selectedServices);
 
     if (!file) {
       showMessage(errorBox, "Моля изберете STL, OBJ или SVG файл.");
@@ -186,6 +220,7 @@ onReady(() => {
         material,
         quantity,
         notes,
+        service_options: serviceOptions,
         status: "pending"
       };
 
@@ -196,6 +231,8 @@ onReady(() => {
 
       showMessage(successBox, "Заявката е изпратена успешно.");
       form.reset();
+      selectedServices.clear();
+      refreshServiceButtons();
     } catch (err) {
       console.error('[UPLOAD] Upload error:', err);
       console.error('[UPLOAD] Error details:', {

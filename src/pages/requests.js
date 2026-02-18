@@ -10,6 +10,14 @@ const STATUS_CLASSES = {
   completed: "bg-success"
 };
 
+const SERVICE_LABELS = {
+  scan: "Сканиране",
+  model: "Моделиране",
+  print: "Принтиране"
+};
+
+const SERVICE_KEYS = Object.keys(SERVICE_LABELS);
+
 function formatPrice(value) {
   if (value === null || value === undefined) return "-";
   if (Number.isNaN(Number(value))) return String(value);
@@ -25,6 +33,25 @@ function formatDeadline(value) {
 
 function canModifyRequest(request) {
   return request.status !== "completed";
+}
+
+function renderServiceBadges(serviceOptions = []) {
+  if (!Array.isArray(serviceOptions) || serviceOptions.length === 0) {
+    return '<span class="text-muted">Няма избрани услуги</span>';
+  }
+
+  return serviceOptions
+    .filter((serviceKey) => SERVICE_KEYS.includes(serviceKey))
+    .map((serviceKey) => `<span class="badge text-bg-secondary me-1">${SERVICE_LABELS[serviceKey]}</span>`)
+    .join("");
+}
+
+function renderServiceToggles(serviceOptions = [], disabled = false) {
+  const selected = new Set(Array.isArray(serviceOptions) ? serviceOptions : []);
+  return SERVICE_KEYS.map((serviceKey) => {
+    const isActive = selected.has(serviceKey);
+    return `<button type="button" class="btn btn-outline-secondary btn-sm task-toggle-btn ${isActive ? "is-active" : ""}" data-service="${serviceKey}" ${disabled ? "disabled" : ""}>${SERVICE_LABELS[serviceKey]}</button>`;
+  }).join("");
 }
 
 function renderRow(request) {
@@ -67,6 +94,14 @@ function renderRequestModalContent(request) {
       <div class="col-12">
         <label class="form-label">Notes</label>
         <textarea class="form-control request-notes" rows="4" ${isModifiable ? "" : "disabled"}>${request.notes || ""}</textarea>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Услуги по заявката</label>
+        <div class="mb-2">${renderServiceBadges(request.service_options)}</div>
+        <div class="d-flex flex-wrap gap-2 request-service-options">
+          ${renderServiceToggles(request.service_options, !isModifiable)}
+        </div>
       </div>
 
       <div class="col-md-4">
@@ -139,7 +174,7 @@ onReady(() => {
 
     const { data, error } = await client
       .from("requests")
-      .select("id, file_name, file_path, material, quantity, notes, status, price, deadline")
+      .select("id, file_name, file_path, material, quantity, notes, service_options, status, price, deadline")
       .eq("user_id", session.user.id)
       .order("created_at", { ascending: false });
 
@@ -178,6 +213,12 @@ onReady(() => {
   });
 
   modalBody?.addEventListener("click", async (event) => {
+    const serviceToggleButton = event.target.closest(".task-toggle-btn");
+    if (serviceToggleButton) {
+      serviceToggleButton.classList.toggle("is-active");
+      return;
+    }
+
     const button = event.target.closest("button[data-action]");
     if (!button) return;
 
@@ -227,6 +268,11 @@ onReady(() => {
       const nextMaterial = modalBody.querySelector(".request-material")?.value || "";
       const nextQuantityRaw = modalBody.querySelector(".request-quantity")?.value || "1";
       const nextNotes = modalBody.querySelector(".request-notes")?.value || "";
+      const nextServiceOptions = Array.from(
+        modalBody.querySelectorAll(".request-service-options .task-toggle-btn.is-active")
+      )
+        .map((buttonNode) => buttonNode.getAttribute("data-service") || "")
+        .filter((serviceKey) => SERVICE_KEYS.includes(serviceKey));
       const nextQuantity = Number.parseInt(nextQuantityRaw, 10);
 
       if (!Number.isInteger(nextQuantity) || nextQuantity < 1) {
@@ -241,7 +287,8 @@ onReady(() => {
         .update({
           material: nextMaterial.trim() || null,
           quantity: nextQuantity,
-          notes: nextNotes.trim() || null
+          notes: nextNotes.trim() || null,
+          service_options: nextServiceOptions
         })
         .eq("id", id);
 
