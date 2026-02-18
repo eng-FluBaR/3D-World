@@ -4,6 +4,8 @@ import * as THREE from "three";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
+const numberFormatter = new Intl.NumberFormat("bg-BG");
+
 function getModelType(project) {
   if (project?.model_type) {
     return String(project.model_type).toLowerCase();
@@ -14,6 +16,29 @@ function getModelType(project) {
   if (candidate.includes(".obj")) return "obj";
   if (candidate.includes(".svg")) return "svg";
   return "other";
+}
+
+function setText(id, value) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.textContent = value;
+  }
+}
+
+function renderKpis(stats) {
+  const completedProjects = Number(stats?.completed_projects) || 0;
+  const registeredUsers = Number(stats?.registered_users) || 0;
+  const activeRequests = Number(stats?.active_requests) || 0;
+
+  setText("index-kpi-completed", numberFormatter.format(completedProjects));
+  setText("index-kpi-users", numberFormatter.format(registeredUsers));
+  setText("index-kpi-active", numberFormatter.format(activeRequests));
+}
+
+function renderFallbackKpis() {
+  setText("index-kpi-completed", "—");
+  setText("index-kpi-users", "—");
+  setText("index-kpi-active", "—");
 }
 
 async function initModelPreview(container, url, type) {
@@ -109,11 +134,23 @@ onReady(async () => {
   if (slotElements.length === 0) return;
 
   const client = createSupabaseClient();
-  const { data, error } = await client
-    .from("gallery_projects")
-    .select("id, file_name, file_url, category, short_description, model_type, is_visible, created_at")
-    .eq("is_visible", true)
-    .order("created_at", { ascending: false });
+  const [galleryResult, kpiResult] = await Promise.all([
+    client
+      .from("gallery_projects")
+      .select("id, file_name, file_url, category, short_description, model_type, is_visible, created_at")
+      .eq("is_visible", true)
+      .order("created_at", { ascending: false }),
+    client.rpc("get_public_site_kpis")
+  ]);
+
+  const { data, error } = galleryResult;
+  const statsPayload = Array.isArray(kpiResult?.data) ? kpiResult.data[0] : kpiResult?.data;
+
+  if (kpiResult?.error || !statsPayload) {
+    renderFallbackKpis();
+  } else {
+    renderKpis(statsPayload);
+  }
 
   if (error || !data || data.length === 0) {
     slotElements.forEach((slot) => {
