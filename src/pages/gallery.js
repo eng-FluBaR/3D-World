@@ -82,7 +82,7 @@ function renderProjectCard(project, canEditGalleryProject) {
   }
 
   const detailsLink = project.file_url
-    ? `<a class="btn btn-sm btn-outline-primary mt-3" href="${project.file_url}" target="_blank" rel="noopener noreferrer">Преглед на файл</a>`
+    ? `<button type="button" class="btn btn-sm btn-outline-primary mt-3 preview-project" data-project-id="${project.id}">Преглед на файл</button>`
     : "";
 
   const editLink = canEditGalleryProject && requestId
@@ -194,11 +194,17 @@ async function initModelPreview(container) {
 onReady(async () => {
   const host = document.getElementById("gallery-projects");
   const tagFilter = document.getElementById("gallery-tag-filter");
+  const previewModalElement = document.getElementById("galleryPreviewModal");
+  const previewTitle = document.getElementById("gallery-preview-title");
+  const previewBody = document.getElementById("gallery-preview-body");
   if (!host) return;
 
   const client = createSupabaseClient();
   const role = await getCurrentUserRole(client);
   const canEditGalleryProject = role === "super_admin";
+  const previewModal = previewModalElement && window.bootstrap
+    ? new window.bootstrap.Modal(previewModalElement)
+    : null;
 
   const { data, error } = await client
     .from("gallery_projects")
@@ -221,6 +227,48 @@ onReady(async () => {
     tags: extractTags(project)
   }));
 
+  const openProjectPreview = async (projectId) => {
+    if (!previewBody || !previewModal) return;
+
+    const project = allProjects.find((item) => item.id === projectId);
+    if (!project) return;
+
+    if (previewTitle) {
+      previewTitle.textContent = project.file_name || "Преглед на проект";
+    }
+
+    const modelType = getModelType(project);
+    if (!project.file_url) {
+      previewBody.innerHTML = '<div class="alert alert-secondary mb-0">Няма налична визуализация за този проект.</div>';
+      previewModal.show();
+      return;
+    }
+
+    if (modelType === "svg") {
+      previewBody.innerHTML = `
+        <div class="border rounded-3 overflow-hidden" style="height:min(70vh, 760px);">
+          <img src="${project.file_url}" alt="${project.file_name || "Gallery file"}" style="width:100%;height:100%;object-fit:contain;background:#f8f9fa;" />
+        </div>
+      `;
+      previewModal.show();
+      return;
+    }
+
+    if (modelType === "stl" || modelType === "obj") {
+      previewBody.innerHTML = `<div class="border rounded-3 bg-light model-preview" data-model-url="${project.file_url}" data-model-type="${modelType}" style="height:min(70vh, 760px);"></div>`;
+      previewModal.show();
+
+      const previewNode = previewBody.querySelector(".model-preview");
+      if (previewNode) {
+        await initModelPreview(previewNode);
+      }
+      return;
+    }
+
+    previewBody.innerHTML = '<div class="alert alert-secondary mb-0">Няма налична визуализация за този тип файл.</div>';
+    previewModal.show();
+  };
+
   const renderProjects = async (projects) => {
     if (!projects || projects.length === 0) {
       renderNoFilterMatch(host);
@@ -241,6 +289,14 @@ onReady(async () => {
         });
       });
     }
+
+    host.querySelectorAll(".preview-project").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const projectId = button.getAttribute("data-project-id");
+        if (!projectId) return;
+        await openProjectPreview(projectId);
+      });
+    });
 
     const modelPreviewNodes = Array.from(host.querySelectorAll(".model-preview"));
     await Promise.all(modelPreviewNodes.map((node) => initModelPreview(node)));
