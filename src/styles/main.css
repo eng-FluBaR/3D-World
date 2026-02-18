@@ -481,6 +481,15 @@ a:hover {
   word-break: break-word;
 }
 
+.gallery-admin-editable {
+  cursor: pointer;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.gallery-admin-editable:hover {
+  border-color: rgba(102, 126, 234, 0.35);
+}
+
 .orders-empty {
   grid-column: 1 / -1;
   text-align: center;

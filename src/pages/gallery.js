@@ -1,5 +1,6 @@
 import { onReady } from "../utils/dom.js";
 import { createSupabaseClient } from "../services/supabase.js";
+import { getSession } from "../services/auth.js";
 import * as THREE from "three";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
@@ -48,11 +49,27 @@ function renderError(host, message) {
   `;
 }
 
-function renderProjectCard(project) {
+async function getCurrentUserRole(client) {
+  const session = await getSession();
+  const userId = session?.user?.id;
+  if (!userId) return null;
+
+  const { data, error } = await client
+    .from("profiles")
+    .select("role")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data.role || null;
+}
+
+function renderProjectCard(project, canEditGalleryProject) {
   const category = project.category || "Общи";
   const description = project.short_description || "Няма добавено описание.";
   const fileName = project.file_name || "Завършен проект";
   const modelType = getModelType(project);
+  const requestId = project.request_id || "";
 
   let previewBlock = '<div class="border rounded-3 bg-light d-flex align-items-center justify-content-center text-muted" style="height:220px;">Няма preview</div>';
 
@@ -68,9 +85,15 @@ function renderProjectCard(project) {
     ? `<a class="btn btn-sm btn-outline-primary mt-3" href="${project.file_url}" target="_blank" rel="noopener noreferrer">Преглед на файл</a>`
     : "";
 
+  const editLink = canEditGalleryProject && requestId
+    ? `<a class="btn btn-sm btn-outline-dark mt-3 ms-2 gallery-edit-link" href="/admin-orders.html?orderId=${encodeURIComponent(requestId)}">Edit</a>`
+    : "";
+
+  const cardEditableClass = canEditGalleryProject && requestId ? "gallery-admin-editable" : "";
+
   return `
     <div class="col-sm-6 col-lg-4">
-      <div class="card h-100 shadow-sm">
+      <div class="card h-100 shadow-sm ${cardEditableClass}" data-order-id="${requestId}">
         <div class="card-body d-flex flex-column">
           <div class="mb-3">
             ${previewBlock}
@@ -80,7 +103,10 @@ function renderProjectCard(project) {
             <span class="badge bg-primary ms-2">${category}</span>
           </div>
           <p class="text-muted mb-0">${description}</p>
-          ${detailsLink}
+          <div class="d-flex flex-wrap align-items-center">
+            ${detailsLink}
+            ${editLink}
+          </div>
         </div>
       </div>
     </div>
@@ -171,10 +197,12 @@ onReady(async () => {
   if (!host) return;
 
   const client = createSupabaseClient();
+  const role = await getCurrentUserRole(client);
+  const canEditGalleryProject = role === "super_admin";
 
   const { data, error } = await client
     .from("gallery_projects")
-    .select("id, file_name, file_url, category, short_description, model_type, is_visible, created_at")
+    .select("id, request_id, file_name, file_url, category, short_description, model_type, is_visible, created_at")
     .eq("is_visible", true)
     .order("created_at", { ascending: false });
 
@@ -199,7 +227,21 @@ onReady(async () => {
       return;
     }
 
-    host.innerHTML = projects.map(renderProjectCard).join("");
+    host.innerHTML = projects.map((project) => renderProjectCard(project, canEditGalleryProject)).join("");
+
+    if (canEditGalleryProject) {
+      host.querySelectorAll(".gallery-admin-editable").forEach((cardNode) => {
+        cardNode.addEventListener("click", (event) => {
+          const interactiveElement = event.target.closest("a, button, input, select, textarea");
+          if (interactiveElement) return;
+
+          const orderId = cardNode.getAttribute("data-order-id");
+          if (!orderId) return;
+          window.location.href = `/admin-orders.html?orderId=${encodeURIComponent(orderId)}`;
+        });
+      });
+    }
+
     const modelPreviewNodes = Array.from(host.querySelectorAll(".model-preview"));
     await Promise.all(modelPreviewNodes.map((node) => initModelPreview(node)));
   };

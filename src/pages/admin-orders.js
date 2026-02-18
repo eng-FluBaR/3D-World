@@ -149,6 +149,8 @@ function renderOrderModalContent(order) {
   const galleryProject = getGalleryProject(order);
   const isCompleted = order.status === "completed";
   const hasAttachment = Boolean(order.file_url || order.file_path);
+  const galleryCategory = galleryProject?.category || "";
+  const galleryDescription = galleryProject?.short_description || "";
   const statusSelect = STATUS_OPTIONS.map(
     (status) => `<option value="${status}" ${order.status === status ? "selected" : ""}>${STATUS_LABELS[status] || status}</option>`
   ).join("");
@@ -201,6 +203,23 @@ function renderOrderModalContent(order) {
         Remove Gallery
       </button>
     </div>
+
+    <div class="border rounded-3 p-3 mt-3">
+      <h6 class="mb-3">Настройки за галерия</h6>
+      <div class="order-fields mb-2">
+        <div class="order-field">
+          <label>Тагове / Категория</label>
+          <input type="text" class="form-control form-control-sm gallery-category-input" value="${galleryCategory}" placeholder="напр. Прототип, Части, Декорация" />
+        </div>
+        <div class="order-field order-field-full">
+          <label>Описание за галерия</label>
+          <textarea class="form-control form-control-sm gallery-description-input" rows="3" placeholder="Кратко описание...">${galleryDescription}</textarea>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline-success save-gallery-meta" data-id="${order.id}" ${isCompleted ? "" : "disabled"}>
+        Запази тагове и описание
+      </button>
+    </div>
   `;
 }
 
@@ -229,6 +248,8 @@ onReady(async () => {
 
   const client = createSupabaseClient();
   let allOrders = [];
+  const deepLinkedOrderId = new URLSearchParams(window.location.search).get("orderId");
+  let hasAttemptedDeepLinkOpen = false;
   const modalInstance = orderModalElement && window.bootstrap
     ? new window.bootstrap.Modal(orderModalElement)
     : null;
@@ -333,38 +354,96 @@ onReady(async () => {
         }
 
         const existingGalleryProject = getGalleryProject(order);
-        const categoryInput = window.prompt("Категория на проекта:", existingGalleryProject?.category || "");
-        if (categoryInput === null) return;
-
-        const descriptionInput = window.prompt(
-          "Кратко описание на проекта:",
-          existingGalleryProject?.short_description || ""
-        );
-        if (descriptionInput === null) return;
+        const categoryInputValue = orderModalBody.querySelector(".gallery-category-input")?.value || "";
+        const descriptionInputValue = orderModalBody.querySelector(".gallery-description-input")?.value || "";
 
         btn.disabled = true;
 
         let publishedAsset;
 
-        try {
-          publishedAsset = await publishOrderAssetToGallery(client, order);
-        } catch (publishError) {
-          btn.disabled = false;
-          alert(publishError?.message || "Неуспешно публикуване на файла в галерията.");
-          return;
+        if (existingGalleryProject?.storage_bucket && existingGalleryProject?.storage_path) {
+          publishedAsset = {
+            fileUrl: existingGalleryProject.file_url || order.file_url || null,
+            storageBucket: existingGalleryProject.storage_bucket,
+            storagePath: existingGalleryProject.storage_path
+          };
+        } else {
+          try {
+            publishedAsset = await publishOrderAssetToGallery(client, order);
+          } catch (publishError) {
+            btn.disabled = false;
+            alert(publishError?.message || "Неуспешно публикуване на файла в галерията.");
+            return;
+          }
         }
 
         const payload = {
           request_id: order.id,
           file_name: order.file_name || order.file_path || "Проект",
           file_url: publishedAsset?.fileUrl || order.file_url || null,
-          category: categoryInput.trim() || "Общи",
-          short_description: descriptionInput.trim() || "",
+          category: categoryInputValue.trim() || "Общи",
+          short_description: descriptionInputValue.trim() || "",
           is_visible: true,
           created_by: adminUserId,
           storage_bucket: publishedAsset?.storageBucket || null,
           storage_path: publishedAsset?.storagePath || null,
           model_type: getFileExtension(order.file_name || order.file_path || "")
+        };
+
+        const { data, error } = await client
+          .from("gallery_projects")
+          .upsert(payload, { onConflict: "request_id" })
+          .select("id, category, short_description, is_visible, storage_bucket, storage_path, file_url, model_type")
+          .single();
+
+        if (error) {
+          btn.disabled = false;
+          alert(error.message);
+          return;
+        }
+
+        allOrders = allOrders.map((item) =>
+          item.id === order.id
+            ? { ...item, gallery_projects: data ? [data] : [] }
+            : item
+        );
+
+        applyFilter();
+        openOrderModal(orderId, false);
+        btn.disabled = false;
+      });
+    });
+
+    orderModalBody.querySelectorAll(".save-gallery-meta").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const orderId = btn.getAttribute("data-id");
+        if (!orderId) return;
+
+        const order = allOrders.find((item) => item.id === orderId);
+        if (!order) return;
+
+        if (order.status !== "completed") {
+          alert("Редакцията за галерия е позволена само за завършени поръчки.");
+          return;
+        }
+
+        const categoryValue = orderModalBody.querySelector(".gallery-category-input")?.value || "";
+        const descriptionValue = orderModalBody.querySelector(".gallery-description-input")?.value || "";
+
+        btn.disabled = true;
+
+        const existingGalleryProject = getGalleryProject(order);
+        const payload = {
+          request_id: order.id,
+          file_name: order.file_name || order.file_path || "Проект",
+          file_url: existingGalleryProject?.file_url || order.file_url || null,
+          category: categoryValue.trim() || "Общи",
+          short_description: descriptionValue.trim() || "",
+          is_visible: true,
+          created_by: adminUserId,
+          storage_bucket: existingGalleryProject?.storage_bucket || null,
+          storage_path: existingGalleryProject?.storage_path || null,
+          model_type: existingGalleryProject?.model_type || getFileExtension(order.file_name || order.file_path || "")
         };
 
         const { data, error } = await client
@@ -512,6 +591,14 @@ onReady(async () => {
 
     body.innerHTML = filtered.map(renderRow).join("");
     attachEventListeners();
+
+    if (deepLinkedOrderId && !hasAttemptedDeepLinkOpen) {
+      const hasOrder = allOrders.some((order) => order.id === deepLinkedOrderId);
+      if (hasOrder) {
+        hasAttemptedDeepLinkOpen = true;
+        openOrderModal(deepLinkedOrderId, true);
+      }
+    }
   };
 
   const attachEventListeners = () => {
