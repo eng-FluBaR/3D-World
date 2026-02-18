@@ -493,10 +493,40 @@ a:hover {
   background: #fff;
   box-shadow: var(--shadow-sm);
   padding: 1rem;
+  border-left: 5px solid transparent;
 }
+
+.order-card.status-pending { border-left-color: #f59e0b; }
+.order-card.status-quoted { border-left-color: #3b82f6; }
+.order-card.status-accepted { border-left-color: #10b981; }
+.order-card.status-rejected { border-left-color: #ef4444; }
+.order-card.status-completed { border-left-color: #06b6d4; }
 
 .order-card-top {
   margin-bottom: 0.85rem;
+}
+
+.order-toggle-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0;
+}
+
+.order-toggle-icon {
+  font-size: 1.2rem;
+  color: #64748b;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.order-details {
+  margin-top: 0.35rem;
 }
 
 .order-user {

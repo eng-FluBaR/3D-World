@@ -12,6 +12,7 @@ const STATUS_LABELS = {
   completed: "Completed"
 };
 const GALLERY_BUCKET = "gallery";
+const UPLOADS_BUCKET = "uploads";
 
 function sanitizeFileName(name) {
   return (name || "project").replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -73,54 +74,133 @@ function getGalleryProject(order) {
   return order.gallery_projects;
 }
 
-function renderRow(order) {
-  const galleryProject = getGalleryProject(order);
-  const isCompleted = order.status === "completed";
-  const statusSelect = STATUS_OPTIONS.map(
-    (s) => `<option value="${s}" ${order.status === s ? "selected" : ""}>${STATUS_LABELS[s] || s}</option>`
-  ).join("");
+function getStatusMeta(status) {
+  const normalizedStatus = STATUS_OPTIONS.includes(status) ? status : "pending";
 
-  const fileLink = order.file_url
-    ? `<a href="${order.file_url}" target="_blank" class="text-truncate d-block">${order.file_name || order.file_path}</a>`
-    : `<small class="text-muted">${order.file_name || order.file_path || "-"}</small>`;
+  const badgeClassMap = {
+    pending: "text-bg-warning",
+    quoted: "text-bg-primary",
+    accepted: "text-bg-success",
+    rejected: "text-bg-danger",
+    completed: "text-bg-info"
+  };
+
+  return {
+    status: normalizedStatus,
+    label: STATUS_LABELS[normalizedStatus] || normalizedStatus,
+    badgeClass: badgeClassMap[normalizedStatus] || "text-bg-secondary"
+  };
+}
+
+async function downloadOrderFile(client, order) {
+  if (!order) return;
+
+  if (!order.file_path) {
+    if (order.file_url) {
+      window.open(order.file_url, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    alert("Няма прикачен файл за сваляне.");
+    return;
+  }
+
+  const { data, error } = await client.storage.from(UPLOADS_BUCKET).download(order.file_path);
+
+  if (error || !data) {
+    alert(error?.message || "Неуспешно сваляне на файла.");
+    return;
+  }
+
+  const blobUrl = URL.createObjectURL(data);
+  const tempLink = document.createElement("a");
+  tempLink.href = blobUrl;
+  tempLink.download = order.file_name || order.file_path.split("/").pop() || "order-file";
+  document.body.appendChild(tempLink);
+  tempLink.click();
+  tempLink.remove();
+  URL.revokeObjectURL(blobUrl);
+}
+
+function renderRow(order) {
+  const statusMeta = getStatusMeta(order.status);
+  const fileLabel = order.file_name || order.file_path || "-";
 
   return `
-    <article class="order-card" data-id="${order.id}">
-      <div class="order-card-top">
-        <div class="order-user">${order.user_email || "-"}</div>
-        <div class="order-file">${fileLink}</div>
-      </div>
-
-      <div class="order-fields">
-        <div class="order-field">
-          <label>Status</label>
-          <select class="form-select form-select-sm status-select status-${order.status}" data-id="${order.id}">
-            ${statusSelect}
-          </select>
-        </div>
-
-        <div class="order-field">
-          <label>Price</label>
-          <input type="number" class="form-control form-control-sm price-input" value="${order.price || ""}" placeholder="0.00" data-id="${order.id}" />
-        </div>
-
-        <div class="order-field order-field-full">
-          <label>Deadline</label>
-          <input type="date" class="form-control form-control-sm deadline-input" value="${order.deadline || ""}" data-id="${order.id}" />
-        </div>
-      </div>
-
-      <div class="order-actions">
-        <button class="btn btn-sm btn-primary save-order" data-id="${order.id}">Save</button>
-        <button class="btn btn-sm btn-outline-danger delete-order" data-id="${order.id}">Delete</button>
-        <button class="btn btn-sm btn-outline-secondary gallery-order" data-id="${order.id}" ${isCompleted ? "" : "disabled"}>
-          ${galleryProject ? "Update Gallery" : "Add Gallery"}
-        </button>
-        <button class="btn btn-sm btn-outline-dark remove-gallery-order" data-id="${order.id}" ${galleryProject ? "" : "disabled"}>
-          Remove Gallery
+    <article class="order-card status-${statusMeta.status}" data-id="${order.id}">
+      <div class="order-card-top mb-0">
+        <button class="order-toggle-btn" data-id="${order.id}" type="button" aria-label="Open order details">
+          <div>
+            <div class="order-user">${order.user_email || "-"}</div>
+            <div class="order-file"><small class="text-muted text-truncate d-block">${fileLabel}</small></div>
+            <small class="text-muted d-block mt-1">Материал: ${order.material || "-"} · Количество: ${order.quantity || 1}</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge ${statusMeta.badgeClass}">${statusMeta.label}</span>
+            <span class="order-toggle-icon" aria-hidden="true">›</span>
+          </div>
         </button>
       </div>
     </article>
+  `;
+}
+
+function renderOrderModalContent(order) {
+  const galleryProject = getGalleryProject(order);
+  const isCompleted = order.status === "completed";
+  const hasAttachment = Boolean(order.file_url || order.file_path);
+  const statusSelect = STATUS_OPTIONS.map(
+    (status) => `<option value="${status}" ${order.status === status ? "selected" : ""}>${STATUS_LABELS[status] || status}</option>`
+  ).join("");
+
+  return `
+    <div class="order-fields mt-2">
+      <div class="order-field">
+        <label>Material</label>
+        <input type="text" class="form-control form-control-sm" value="${order.material || "-"}" disabled />
+      </div>
+
+      <div class="order-field">
+        <label>Quantity</label>
+        <input type="number" class="form-control form-control-sm" value="${order.quantity || 1}" disabled />
+      </div>
+
+      <div class="order-field">
+        <label>Status</label>
+        <select class="form-select form-select-sm status-select status-${order.status}" data-id="${order.id}">
+          ${statusSelect}
+        </select>
+      </div>
+
+      <div class="order-field">
+        <label>Price</label>
+        <input type="number" class="form-control form-control-sm price-input" value="${order.price || ""}" placeholder="0.00" data-id="${order.id}" />
+      </div>
+
+      <div class="order-field order-field-full">
+        <label>Deadline</label>
+        <input type="date" class="form-control form-control-sm deadline-input" value="${order.deadline || ""}" data-id="${order.id}" />
+      </div>
+
+      <div class="order-field order-field-full">
+        <label>Описание / Бележки</label>
+        <textarea class="form-control form-control-sm" rows="3" disabled>${order.notes || "-"}</textarea>
+      </div>
+    </div>
+
+    <div class="order-actions mt-3">
+      <button class="btn btn-sm btn-outline-primary download-order" data-id="${order.id}" ${hasAttachment ? "" : "disabled"}>
+        Свали файл
+      </button>
+      <button class="btn btn-sm btn-primary save-order" data-id="${order.id}">Save</button>
+      <button class="btn btn-sm btn-outline-danger delete-order" data-id="${order.id}">Delete</button>
+      <button class="btn btn-sm btn-outline-secondary gallery-order" data-id="${order.id}" ${isCompleted ? "" : "disabled"}>
+        ${galleryProject ? "Update Gallery" : "Add Gallery"}
+      </button>
+      <button class="btn btn-sm btn-outline-dark remove-gallery-order" data-id="${order.id}" ${galleryProject ? "" : "disabled"}>
+        Remove Gallery
+      </button>
+    </div>
   `;
 }
 
@@ -135,6 +215,9 @@ onReady(async () => {
   const filterSelect = document.getElementById("status-filter");
   const errorBox = document.getElementById("orders-error");
   const logoutButton = document.getElementById("admin-logout");
+  const orderModalElement = document.getElementById("orderDetailsModal");
+  const orderModalTitle = document.getElementById("order-modal-title");
+  const orderModalBody = document.getElementById("order-modal-body");
 
   const role = await requireAdminRole();
   if (!role) {
@@ -146,77 +229,38 @@ onReady(async () => {
 
   const client = createSupabaseClient();
   let allOrders = [];
+  const modalInstance = orderModalElement && window.bootstrap
+    ? new window.bootstrap.Modal(orderModalElement)
+    : null;
 
-  const loadOrders = async () => {
-    const { data, error } = await client
-      .from("requests")
-      .select(
-        `
-        id,
-        user_id,
-        file_name,
-        file_path,
-        file_url,
-        status,
-        price,
-        deadline,
-        profiles:user_id(*),
-        gallery_projects(id, category, short_description, is_visible, storage_bucket, storage_path, file_url, model_type)
-      `
-      )
-      .order("created_at", { ascending: false });
+  const bindModalActionEvents = () => {
+    if (!orderModalBody) return;
 
-    if (error) {
-      errorBox.textContent = error.message;
-      errorBox.classList.remove("d-none");
-      renderEmptyState(body);
-      return;
-    }
-
-    if (!data) {
-      renderEmptyState(body);
-      return;
-    }
-
-    allOrders = data.map((order) => ({
-      ...order,
-      user_email: order.profiles?.email || "-"
-    }));
-
-    applyFilter();
-  };
-
-  const applyFilter = () => {
-    const filterValue = filterSelect?.value || "";
-    const filtered = filterValue
-      ? allOrders.filter((o) => o.status === filterValue)
-      : allOrders;
-
-    if (filtered.length === 0) {
-      renderEmptyState(body);
-      return;
-    }
-
-    body.innerHTML = filtered.map(renderRow).join("");
-    attachEventListeners();
-  };
-
-  const attachEventListeners = () => {
-    body.querySelectorAll(".status-select").forEach((select) => {
+    orderModalBody.querySelectorAll(".status-select").forEach((select) => {
       select.addEventListener("change", () => {
         STATUS_OPTIONS.forEach((status) => select.classList.remove(`status-${status}`));
         select.classList.add(`status-${select.value}`);
       });
     });
 
-    body.querySelectorAll(".save-order").forEach((btn) => {
+    orderModalBody.querySelectorAll(".download-order").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const orderId = btn.getAttribute("data-id");
-        const row = body.querySelector(`.order-card[data-id="${orderId}"]`);
+        const order = allOrders.find((item) => item.id === orderId);
+        if (!order) return;
 
-        const status = row.querySelector(".status-select")?.value || "";
-        const price = row.querySelector(".price-input")?.value || null;
-        const deadline = row.querySelector(".deadline-input")?.value || null;
+        btn.disabled = true;
+        await downloadOrderFile(client, order);
+        btn.disabled = false;
+      });
+    });
+
+    orderModalBody.querySelectorAll(".save-order").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const orderId = btn.getAttribute("data-id");
+        const status = orderModalBody.querySelector(".status-select")?.value || "";
+        const price = orderModalBody.querySelector(".price-input")?.value || null;
+        const deadline = orderModalBody.querySelector(".deadline-input")?.value || null;
 
         if (!status) {
           alert("Status is required.");
@@ -233,22 +277,23 @@ onReady(async () => {
 
         if (error) {
           alert(error.message);
-        } else {
-          const orderIndex = allOrders.findIndex((o) => o.id === orderId);
-          if (orderIndex !== -1) {
-            allOrders[orderIndex] = {
-              ...allOrders[orderIndex],
-              ...updatePayload
-            };
-          }
-          applyFilter();
+          btn.disabled = false;
+          return;
         }
 
+        allOrders = allOrders.map((order) =>
+          order.id === orderId
+            ? { ...order, ...updatePayload }
+            : order
+        );
+
+        applyFilter();
+        openOrderModal(orderId, false);
         btn.disabled = false;
       });
     });
 
-    body.querySelectorAll(".delete-order").forEach((btn) => {
+    orderModalBody.querySelectorAll(".delete-order").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const orderId = btn.getAttribute("data-id");
         if (!orderId) return;
@@ -270,10 +315,11 @@ onReady(async () => {
 
         allOrders = allOrders.filter((order) => order.id !== orderId);
         applyFilter();
+        modalInstance?.hide();
       });
     });
 
-    body.querySelectorAll(".gallery-order").forEach((btn) => {
+    orderModalBody.querySelectorAll(".gallery-order").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const orderId = btn.getAttribute("data-id");
         if (!orderId) return;
@@ -340,10 +386,12 @@ onReady(async () => {
         );
 
         applyFilter();
+        openOrderModal(orderId, false);
+        btn.disabled = false;
       });
     });
 
-    body.querySelectorAll(".remove-gallery-order").forEach((btn) => {
+    orderModalBody.querySelectorAll(".remove-gallery-order").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const orderId = btn.getAttribute("data-id");
         if (!orderId) return;
@@ -386,6 +434,92 @@ onReady(async () => {
         );
 
         applyFilter();
+        openOrderModal(orderId, false);
+      });
+    });
+  };
+
+  const openOrderModal = (orderId, showModal = true) => {
+    if (!orderModalBody) return;
+
+    const order = allOrders.find((item) => item.id === orderId);
+    if (!order) return;
+
+    if (orderModalTitle) {
+      orderModalTitle.textContent = `Поръчка · ${order.user_email || "-"}`;
+    }
+
+    orderModalBody.innerHTML = renderOrderModalContent(order);
+    bindModalActionEvents();
+
+    if (showModal) {
+      modalInstance?.show();
+    }
+  };
+
+  const loadOrders = async () => {
+    const { data, error } = await client
+      .from("requests")
+      .select(
+        `
+        id,
+        user_id,
+        file_name,
+        file_path,
+        file_url,
+        material,
+        quantity,
+        notes,
+        status,
+        price,
+        deadline,
+        profiles:user_id(*),
+        gallery_projects(id, category, short_description, is_visible, storage_bucket, storage_path, file_url, model_type)
+      `
+      )
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      errorBox.textContent = error.message;
+      errorBox.classList.remove("d-none");
+      renderEmptyState(body);
+      return;
+    }
+
+    if (!data) {
+      renderEmptyState(body);
+      return;
+    }
+
+    allOrders = data.map((order) => ({
+      ...order,
+      user_email: order.profiles?.email || "-"
+    }));
+
+    applyFilter();
+  };
+
+  const applyFilter = () => {
+    const filterValue = filterSelect?.value || "";
+    const filtered = filterValue
+      ? allOrders.filter((o) => o.status === filterValue)
+      : allOrders;
+
+    if (filtered.length === 0) {
+      renderEmptyState(body);
+      return;
+    }
+
+    body.innerHTML = filtered.map(renderRow).join("");
+    attachEventListeners();
+  };
+
+  const attachEventListeners = () => {
+    body.querySelectorAll(".order-toggle-btn").forEach((toggleButton) => {
+      toggleButton.addEventListener("click", () => {
+        const orderId = toggleButton.getAttribute("data-id");
+        if (!orderId) return;
+        openOrderModal(orderId, true);
       });
     });
   };

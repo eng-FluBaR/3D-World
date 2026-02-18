@@ -41,6 +41,18 @@
       <div class="alert alert-danger d-none mt-3" role="alert" id="orders-error"></div>
     </main>
 
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="order-modal-title">Поръчка</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="order-modal-body"></div>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
     <script type="module" src="/src/pages/admin-orders.js"></script>
     <script
