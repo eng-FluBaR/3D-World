@@ -1,4 +1,4 @@
-import { getSession } from "../services/auth.js";
+import { getSession, refreshSession } from "../services/auth.js";
 import { createSupabaseClient } from "../services/supabase.js";
 
 const ALLOWED_ROLES = ["super_admin", "moderator"];
@@ -30,6 +30,8 @@ export async function requireAdminRole() {
     return null;
   }
 
+  await refreshSession();
+
   return data.role;
 }
 
@@ -59,6 +61,8 @@ export async function requireSuperAdmin() {
     window.location.replace("/dashboard.html");
     return false;
   }
+
+  await refreshSession();
 
   return true;
 }

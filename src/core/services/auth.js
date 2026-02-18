@@ -53,6 +53,23 @@ export async function getSession() {
   }
 }
 
+export async function refreshSession() {
+  try {
+    const client = getClient();
+    const { data, error } = await client.auth.refreshSession();
+
+    if (error) {
+      console.warn('[AUTH] Error refreshing session:', error);
+      return null;
+    }
+
+    return data?.session || null;
+  } catch (err) {
+    console.warn('[AUTH] Exception in refreshSession:', err);
+    return null;
+  }
+}
+
 export function onAuthStateChange(callback) {
   const client = getClient();
   return client.auth.onAuthStateChange((event, session) => {
