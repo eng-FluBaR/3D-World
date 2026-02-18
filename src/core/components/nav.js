@@ -19,11 +19,13 @@ const USER_NAV_ITEMS = [
 const SUPER_ADMIN_NAV_ITEMS = [
   { name: "Админ панел", href: "/admin.html", page: "admin" },
   { name: "Потребители", href: "/admin-users.html", page: "admin-users" },
+  { name: "Запитвания", href: "/admin-inquiries.html", page: "admin-inquiries" },
   { name: "Поръчки", href: "/admin-orders.html", page: "admin-orders" },
   { name: "Материали", href: "/admin-materials.html", page: "admin-materials" }
 ];
 
 const MODERATOR_NAV_ITEMS = [
+  { name: "Запитвания", href: "/admin-inquiries.html", page: "admin-inquiries" },
   { name: "Поръчки", href: "/admin-orders.html", page: "admin-orders" },
   { name: "Материали", href: "/admin-materials.html", page: "admin-materials" }
 ];
@@ -38,6 +40,15 @@ function getRoleBadgeClass(role) {
   if (role === "super_admin") return "text-bg-warning text-dark";
   if (role === "moderator") return "text-bg-info";
   return "text-bg-secondary";
+}
+
+function renderInquiriesIndicator(unreadCount) {
+  return `
+    <span class="inquiries-indicator" title="Непрочетени запитвания">
+      <span class="inquiries-icon" aria-hidden="true">🔔</span>
+      <span class="badge text-bg-danger inquiries-count">${unreadCount}</span>
+    </span>
+  `;
 }
 
 async function getUserRole() {
@@ -76,6 +87,24 @@ async function getUserRole() {
   }
 }
 
+async function getUnreadInquiriesCount() {
+  try {
+    const client = createSupabaseClient();
+    const { count, error } = await client
+      .from("contact_inquiries")
+      .select("id", { count: "exact", head: true })
+      .eq("is_read", false);
+
+    if (error) {
+      return 0;
+    }
+
+    return count || 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function initNav(activePage) {
   const navHost = document.getElementById("app-nav");
   if (!navHost) {
@@ -106,6 +135,20 @@ export async function initNav(activePage) {
       ? MODERATOR_NAV_ITEMS
       : [];
 
+  const unreadInquiriesCount = isAdmin ? await getUnreadInquiriesCount() : 0;
+  const inquiriesIndicator = isAdmin ? renderInquiriesIndicator(unreadInquiriesCount) : "";
+
+  const adminMenuItemsWithUnread = adminMenuItems.map((item) => {
+    if (item.page !== "admin-inquiries" || unreadInquiriesCount <= 0) {
+      return item;
+    }
+
+    return {
+      ...item,
+      name: `${item.name} <span class="badge text-bg-danger ms-1">${unreadInquiriesCount}</span>`
+    };
+  });
+
   const roleLabel = getRoleLabel(userInfo?.role);
   const roleBadgeClass = getRoleBadgeClass(userInfo?.role);
   const userDisplayName = userInfo?.name || "";
@@ -117,18 +160,20 @@ export async function initNav(activePage) {
     (item) => `<li><a class="dropdown-item" href="${item.href}">${item.name}</a></li>`
   ).join("");
 
-  const adminDropdownItems = adminMenuItems.map(
-    (item) => `<li><a class="dropdown-item" href="${item.href}">${item.name}</a></li>`
+  const adminDropdownItems = adminMenuItemsWithUnread.map(
+    (item) => `<li><a class="dropdown-item d-flex justify-content-between align-items-center" href="${item.href}">${item.name}</a></li>`
   ).join("");
 
   const desktopAuthButtons = isAuthenticated
     ? `<li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-           👤 ${userDisplayName} ${roleBadge}
+         <a class="nav-link dropdown-toggle profile-dropdown-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+           ${inquiriesIndicator}
+           <span class="profile-name">👤 ${userDisplayName}</span>
+           ${roleBadge}
          </a>
          <ul class="dropdown-menu dropdown-menu-end">
            ${userMenuItems}
-           ${adminMenuItems.length > 0 ? '<li><hr class="dropdown-divider"></li>' + adminDropdownItems : ''}
+           ${adminMenuItemsWithUnread.length > 0 ? '<li><hr class="dropdown-divider"></li>' + adminDropdownItems : ''}
            <li><hr class="dropdown-divider"></li>
            <li><a class="dropdown-item" href="#" id="logout-btn-desktop">Изход</a></li>
          </ul>
@@ -139,12 +184,14 @@ export async function initNav(activePage) {
   const mobileProfile = isAuthenticated
     ? `<div class="mobile-profile-slot d-lg-none">
          <div class="dropdown">
-           <a class="nav-link dropdown-toggle mobile-profile-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-             👤 ${userDisplayName} ${roleBadge}
+           <a class="nav-link dropdown-toggle mobile-profile-toggle profile-dropdown-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+             ${inquiriesIndicator}
+             <span class="profile-name">👤 ${userDisplayName}</span>
+             ${roleBadge}
            </a>
            <ul class="dropdown-menu dropdown-menu-end">
              ${userMenuItems}
-             ${adminMenuItems.length > 0 ? '<li><hr class="dropdown-divider"></li>' + adminDropdownItems : ''}
+             ${adminMenuItemsWithUnread.length > 0 ? '<li><hr class="dropdown-divider"></li>' + adminDropdownItems : ''}
              <li><hr class="dropdown-divider"></li>
              <li><a class="dropdown-item" href="#" id="logout-btn-mobile">Изход</a></li>
            </ul>

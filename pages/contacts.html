@@ -75,31 +75,11 @@
     </footer>
 
     <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/pages/contacts.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script>
-      const form = document.getElementById("contact-form");
-      const successMessage = document.getElementById("form-success");
-
-      if (form) {
-        form.addEventListener("submit", (event) => {
-          event.preventDefault();
-
-          if (!form.checkValidity()) {
-            event.stopPropagation();
-            form.classList.add("was-validated");
-            if (successMessage) successMessage.classList.add("d-none");
-            return;
-          }
-
-          form.classList.add("was-validated");
-          if (successMessage) successMessage.classList.remove("d-none");
-          form.reset();
-        });
-      }
-    </script>
   </body>
 </html>

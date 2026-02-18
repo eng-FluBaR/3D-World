@@ -13,7 +13,7 @@ onReady(async () => {
   ensureSupabaseConfig();
 
   const protectedPages = ["dashboard", "upload", "requests", "profile"];
-  const adminPages = ["admin", "admin-users", "admin-orders", "admin-materials", "admin-cms"];
+  const adminPages = ["admin", "admin-users", "admin-orders", "admin-materials", "admin-cms", "admin-inquiries"];
   const authPages = ["login", "register"];
 
   // Check authentication for protected pages

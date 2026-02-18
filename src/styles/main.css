@@ -119,6 +119,41 @@ main {
   border-top-color: rgba(102, 126, 234, 0.2);
 }
 
+#app-nav .profile-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+#app-nav .profile-dropdown-toggle::after {
+  margin-left: 0.45rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+#app-nav .inquiries-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  line-height: 1;
+}
+
+#app-nav .inquiries-icon {
+  font-size: 0.95rem;
+}
+
+#app-nav .inquiries-count {
+  font-size: 0.68rem;
+  padding: 0.2rem 0.45rem;
+}
+
+#app-nav .profile-name {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @media (min-width: 992px) {
   #app-nav .nav-shell {
     max-width: 1320px;
@@ -418,6 +453,34 @@ a:hover {
   gap: 1rem;
 }
 
+.inquiries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.inquiry-card {
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.inquiry-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.inquiry-message {
+  margin-bottom: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .orders-empty {
   grid-column: 1 / -1;
   text-align: center;
@@ -608,6 +671,10 @@ footer a:hover {
     margin-left: 0.35rem;
   }
 
+  #app-nav .profile-name {
+    max-width: 110px;
+  }
+
   #app-nav .navbar-brand {
     font-size: 1.2rem !important;
   }
@@ -668,6 +735,10 @@ footer a:hover {
   }
 
   .orders-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inquiries-grid {
     grid-template-columns: 1fr;
   }
 
