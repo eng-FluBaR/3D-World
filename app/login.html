@@ -17,28 +17,54 @@
     <main class="flex-grow-1">
       <div class="container py-5">
         <div class="row justify-content-center">
-          <div class="col-md-6 col-lg-5">
-            <div class="page-hero mb-4">
-              <h1>Вход 🔑</h1>
-              <p>Влезте в акаунта си</p>
-            </div>
-            <form class="card shadow" id="login-form">
-              <div class="card-body">
-                <div class="mb-4">
-                  <label class="form-label fw-semibold" for="email">Имейл адрес</label>
-                  <input class="form-control" type="email" id="email" placeholder="ivan@example.com" required />
+          <div class="col-12 col-lg-10">
+            <div class="row g-4 align-items-stretch">
+              <div class="col-lg-7">
+                <div class="page-hero mb-4">
+                  <h1>Вход 🔑</h1>
+                  <p>Влезте в акаунта си</p>
                 </div>
-                <div class="mb-4">
-                  <label class="form-label fw-semibold" for="password">Парола</label>
-                  <input class="form-control" type="password" id="password" placeholder="Въведете паролата си" required />
-                </div>
-                <div class="alert alert-danger d-none" role="alert" id="login-error"></div>
-                <button class="btn btn-primary btn-lg w-100" type="submit" id="login-submit">Влез</button>
-                <p class="mt-3 mb-0 text-center text-muted">
-                  Нямате акаунт? <a href="/app/register.html">Регистрирайте се тук</a>
-                </p>
+                <form class="card shadow h-100" id="login-form">
+                  <div class="card-body">
+                    <div class="mb-4">
+                      <label class="form-label fw-semibold" for="email">Имейл адрес</label>
+                      <input class="form-control" type="email" id="email" placeholder="ivan@example.com" required />
+                    </div>
+                    <div class="mb-4">
+                      <label class="form-label fw-semibold" for="password">Парола</label>
+                      <input class="form-control" type="password" id="password" placeholder="Въведете паролата си" required />
+                    </div>
+                    <div class="alert alert-danger d-none" role="alert" id="login-error"></div>
+                    <button class="btn btn-primary btn-lg w-100" type="submit" id="login-submit">Влез</button>
+                    <p class="mt-3 mb-0 text-center text-muted">
+                      Нямате акаунт? <a href="/app/register.html">Регистрирайте се тук</a>
+                    </p>
+                  </div>
+                </form>
               </div>
-            </form>
+
+              <div class="col-lg-5">
+                <aside class="card shadow h-100">
+                  <div class="card-body">
+                    <h5 class="card-title mb-3">Тестови акаунти</h5>
+                    <div class="mb-3">
+                      <div class="fw-semibold">admin2@abv.bg</div>
+                      <div class="text-muted">Статус: Админ</div>
+                    </div>
+                    <div class="mb-3">
+                      <div class="fw-semibold">dancho@abv.bg</div>
+                      <div class="text-muted">Статус: Модератор</div>
+                    </div>
+                    <div class="mb-3">
+                      <div class="fw-semibold">test@abv.bg</div>
+                      <div class="text-muted">Статус: Потребител</div>
+                    </div>
+                    <div class="alert alert-info mb-0" role="note">Паролата е 123456</div>
+                  </div>
+                </aside>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
