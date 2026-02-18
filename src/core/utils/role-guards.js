@@ -1,4 +1,4 @@
-import { getSession, refreshSession } from "../services/auth.js";
+﻿import { getSession, refreshSession } from "../services/auth.js";
 import { createSupabaseClient } from "../services/supabase.js";
 
 const ALLOWED_ROLES = ["super_admin", "moderator"];
@@ -6,7 +6,7 @@ const ALLOWED_ROLES = ["super_admin", "moderator"];
 export async function requireAdminRole() {
   const session = await getSession();
   if (!session) {
-    window.location.replace("/login.html");
+    window.location.replace("/app/login.html");
     return null;
   }
 
@@ -21,12 +21,12 @@ export async function requireAdminRole() {
 
   if (error || !data) {
     console.warn("Could not load user role:", error?.message);
-    window.location.replace("/dashboard.html");
+    window.location.replace("/app/dashboard.html");
     return null;
   }
 
   if (!ALLOWED_ROLES.includes(data.role)) {
-    window.location.replace("/dashboard.html");
+    window.location.replace("/app/dashboard.html");
     return null;
   }
 
@@ -38,7 +38,7 @@ export async function requireAdminRole() {
 export async function requireSuperAdmin() {
   const session = await getSession();
   if (!session) {
-    window.location.replace("/login.html");
+    window.location.replace("/app/login.html");
     return false;
   }
 
@@ -53,12 +53,12 @@ export async function requireSuperAdmin() {
 
   if (error || !data) {
     console.warn("Could not load user role:", error?.message);
-    window.location.replace("/dashboard.html");
+    window.location.replace("/app/dashboard.html");
     return false;
   }
 
   if (data.role !== "super_admin") {
-    window.location.replace("/dashboard.html");
+    window.location.replace("/app/dashboard.html");
     return false;
   }
 
@@ -66,3 +66,4 @@ export async function requireSuperAdmin() {
 
   return true;
 }
+

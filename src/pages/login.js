@@ -34,7 +34,7 @@ onReady(() => {
       if (error) {
         throw error;
       }
-      window.location.replace("/dashboard.html");
+      window.location.replace("/app/dashboard.html");
     } catch (err) {
       if (errorBox) {
         errorBox.textContent = err?.message || "Входът се провали. Моля опитайте отново.";
@@ -45,3 +45,4 @@ onReady(() => {
     }
   });
 });
+

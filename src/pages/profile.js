@@ -27,7 +27,7 @@ onReady(async () => {
 
   const session = await getSession();
   if (!session) {
-    window.location.replace("/login.html");
+    window.location.replace("/app/login.html");
     return;
   }
 
@@ -120,10 +120,11 @@ onReady(async () => {
       logoutButton.disabled = true;
       try {
         await signOut();
-        window.location.replace("/login.html");
+        window.location.replace("/app/login.html");
       } finally {
         logoutButton.disabled = false;
       }
     });
   }
 });
+

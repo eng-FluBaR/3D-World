@@ -11,23 +11,23 @@ const PUBLIC_NAV_ITEMS = [
 ];
 
 const USER_NAV_ITEMS = [
-  { name: "Качване", href: "/upload.html", page: "upload" },
-  { name: "Заявки", href: "/requests.html", page: "requests" },
-  { name: "Профил", href: "/profile.html", page: "profile" }
+  { name: "Качване", href: "/app/upload.html", page: "upload" },
+  { name: "Заявки", href: "/app/requests.html", page: "requests" },
+  { name: "Профил", href: "/app/profile.html", page: "profile" }
 ];
 
 const SUPER_ADMIN_NAV_ITEMS = [
-  { name: "Админ панел", href: "/admin.html", page: "admin" },
-  { name: "Потребители", href: "/admin-users.html", page: "admin-users" },
-  { name: "Запитвания", href: "/admin-inquiries.html", page: "admin-inquiries" },
-  { name: "Поръчки", href: "/admin-orders.html", page: "admin-orders" },
-  { name: "Материали", href: "/admin-materials.html", page: "admin-materials" }
+  { name: "Админ панел", href: "/admin-panel/admin.html", page: "admin" },
+  { name: "Потребители", href: "/admin-panel/admin-users.html", page: "admin-users" },
+  { name: "Запитвания", href: "/admin-panel/admin-inquiries.html", page: "admin-inquiries" },
+  { name: "Поръчки", href: "/admin-panel/admin-orders.html", page: "admin-orders" },
+  { name: "Материали", href: "/admin-panel/admin-materials.html", page: "admin-materials" }
 ];
 
 const MODERATOR_NAV_ITEMS = [
-  { name: "Запитвания", href: "/admin-inquiries.html", page: "admin-inquiries" },
-  { name: "Поръчки", href: "/admin-orders.html", page: "admin-orders" },
-  { name: "Материали", href: "/admin-materials.html", page: "admin-materials" }
+  { name: "Запитвания", href: "/admin-panel/admin-inquiries.html", page: "admin-inquiries" },
+  { name: "Поръчки", href: "/admin-panel/admin-orders.html", page: "admin-orders" },
+  { name: "Материали", href: "/admin-panel/admin-materials.html", page: "admin-materials" }
 ];
 
 function getRoleLabel(role) {
@@ -178,8 +178,8 @@ export async function initNav(activePage) {
            <li><a class="dropdown-item" href="#" id="logout-btn-desktop">Изход</a></li>
          </ul>
        </li>`
-    : `<li class="nav-item"><a class="nav-link" href="/login.html">Вход</a></li>
-       <li class="nav-item"><a class="btn btn-outline-light ms-2" href="/register.html">Регистрация</a></li>`;
+    : `<li class="nav-item"><a class="nav-link" href="/app/login.html">Вход</a></li>
+       <li class="nav-item"><a class="btn btn-outline-light ms-2" href="/app/register.html">Регистрация</a></li>`;
 
   const mobileProfile = isAuthenticated
     ? `<div class="mobile-profile-slot d-lg-none">
@@ -241,3 +241,4 @@ export async function initNav(activePage) {
     }
   }
 }
+

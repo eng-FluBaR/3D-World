@@ -10,9 +10,10 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <script type="module" crossorigin src="/assets/pagesGallery-BqDoQ6FF.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/main-CE7TNLLL.js">
-    <link rel="stylesheet" crossorigin href="/assets/main-DM8neo9P.css">
+    <script type="module" crossorigin src="/assets/pagesGallery-BkLLmhor.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/main-3YpaM1PY.js">
+    <link rel="modulepreload" crossorigin href="/assets/OBJLoader-BIMFwR0h.js">
+    <link rel="stylesheet" crossorigin href="/assets/main-DnsGyh1s.css">
     <link rel="stylesheet" crossorigin href="/assets/public-structure-C2IxEB6N.css">
   </head>
   <body data-page="gallery">
@@ -49,6 +50,18 @@
         <a class="text-decoration-none" href="/pages/contacts.html">Request portfolio</a>
       </div>
     </footer>
+
+    <div class="modal fade" id="galleryPreviewModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="gallery-preview-title">Преглед на проект</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="gallery-preview-body"></div>
+        </div>
+      </div>
+    </div>
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

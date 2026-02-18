@@ -1,12 +1,12 @@
-import { onReady } from "../utils/dom.js";
+﻿import { onReady } from "../utils/dom.js";
 import { signOut } from "../services/auth.js";
 import { createSupabaseClient } from "../services/supabase.js";
 import { requireAdminRole } from "../utils/role-guards.js";
 
 function formatCurrency(value) {
-  if (value === null || value === undefined) return "€0.00";
-  if (Number.isNaN(Number(value))) return "€0.00";
-  return `€${Number(value).toFixed(2)}`;
+  if (value === null || value === undefined) return "â‚¬0.00";
+  if (Number.isNaN(Number(value))) return "â‚¬0.00";
+  return `â‚¬${Number(value).toFixed(2)}`;
 }
 
 onReady(async () => {
@@ -26,7 +26,7 @@ onReady(async () => {
   }
 
   if (role === "moderator") {
-    window.location.replace("/admin-orders.html");
+    window.location.replace("/admin-panel/admin-orders.html");
     return;
   }
 
@@ -39,14 +39,14 @@ onReady(async () => {
   if (loginLink) {
     loginLink.addEventListener("click", async (event) => {
       event.preventDefault();
-      window.location.href = "/login.html";
+      window.location.href = "/app/login.html";
     });
   }
 
   if (userViewLink) {
     userViewLink.addEventListener("click", (event) => {
       event.preventDefault();
-      window.location.href = "/dashboard.html";
+      window.location.href = "/app/dashboard.html";
     });
   }
 
@@ -69,7 +69,7 @@ onReady(async () => {
       if (totalRequestsEl) totalRequestsEl.textContent = "0";
       if (pendingRequestsEl) pendingRequestsEl.textContent = "0";
       if (completedRequestsEl) completedRequestsEl.textContent = "0";
-      if (totalRevenueEl) totalRevenueEl.textContent = "€0.00";
+      if (totalRevenueEl) totalRevenueEl.textContent = "â‚¬0.00";
       return;
     }
 
@@ -91,10 +91,11 @@ onReady(async () => {
       logoutButton.disabled = true;
       try {
         await signOut();
-        window.location.replace("/login.html");
+        window.location.replace("/app/login.html");
       } finally {
         logoutButton.disabled = false;
       }
     });
   }
 });
+

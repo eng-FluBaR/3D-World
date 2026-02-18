@@ -1,4 +1,4 @@
-import { onReady } from "../utils/dom.js";
+﻿import { onReady } from "../utils/dom.js";
 import { signOut } from "../services/auth.js";
 import { createSupabaseClient } from "../services/supabase.js";
 import { requireSuperAdmin } from "../utils/role-guards.js";
@@ -138,10 +138,11 @@ onReady(async () => {
       logoutButton.disabled = true;
       try {
         await signOut();
-        window.location.replace("/login.html");
+        window.location.replace("/app/login.html");
       } finally {
         logoutButton.disabled = false;
       }
     });
   }
 });
+

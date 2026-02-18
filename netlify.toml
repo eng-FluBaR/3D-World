@@ -1,3 +1,58 @@
 [build]
   command = "npm run build"
   publish = "dist"
+
+[[redirects]]
+  from = "/login.html"
+  to = "/app/login.html"
+  status = 301
+
+[[redirects]]
+  from = "/register.html"
+  to = "/app/register.html"
+  status = 301
+
+[[redirects]]
+  from = "/dashboard.html"
+  to = "/app/dashboard.html"
+  status = 301
+
+[[redirects]]
+  from = "/upload.html"
+  to = "/app/upload.html"
+  status = 301
+
+[[redirects]]
+  from = "/requests.html"
+  to = "/app/requests.html"
+  status = 301
+
+[[redirects]]
+  from = "/profile.html"
+  to = "/app/profile.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin.html"
+  to = "/admin-panel/admin.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin-users.html"
+  to = "/admin-panel/admin-users.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin-orders.html"
+  to = "/admin-panel/admin-orders.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin-materials.html"
+  to = "/admin-panel/admin-materials.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin-cms.html"
+  to = "/admin-panel/admin-cms.html"
+  status = 301

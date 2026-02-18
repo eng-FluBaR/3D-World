@@ -153,7 +153,7 @@ onReady(() => {
 
     const session = await getSession();
     if (!session) {
-      window.location.replace("/login.html");
+      window.location.replace("/app/login.html");
       return;
     }
 
@@ -262,3 +262,4 @@ onReady(() => {
     }
   });
 });
+

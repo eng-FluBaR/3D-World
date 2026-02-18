@@ -86,7 +86,7 @@ function renderProjectCard(project, canEditGalleryProject) {
     : "";
 
   const editLink = canEditGalleryProject && requestId
-    ? `<a class="btn btn-sm btn-outline-dark mt-3 ms-2 gallery-edit-link" href="/admin-orders.html?orderId=${encodeURIComponent(requestId)}">Edit</a>`
+    ? `<a class="btn btn-sm btn-outline-dark mt-3 ms-2 gallery-edit-link" href="/admin-panel/admin-orders.html?orderId=${encodeURIComponent(requestId)}">Edit</a>`
     : "";
 
   const cardEditableClass = canEditGalleryProject && requestId ? "gallery-admin-editable" : "";
@@ -285,7 +285,7 @@ onReady(async () => {
 
           const orderId = cardNode.getAttribute("data-order-id");
           if (!orderId) return;
-          window.location.href = `/admin-orders.html?orderId=${encodeURIComponent(orderId)}`;
+          window.location.href = `/admin-panel/admin-orders.html?orderId=${encodeURIComponent(orderId)}`;
         });
       });
     }
@@ -325,3 +325,4 @@ onReady(async () => {
 
   await renderProjects(allProjects);
 });
+
