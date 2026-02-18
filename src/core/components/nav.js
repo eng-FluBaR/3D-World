@@ -16,10 +16,16 @@ const USER_NAV_ITEMS = [
   { name: "Профил", href: "/profile.html", page: "profile" }
 ];
 
-const ADMIN_NAV_ITEMS = [
+const SUPER_ADMIN_NAV_ITEMS = [
   { name: "Админ панел", href: "/admin.html", page: "admin" },
   { name: "Потребители", href: "/admin-users.html", page: "admin-users" },
-  { name: "Поръчки", href: "/admin-orders.html", page: "admin-orders" }
+  { name: "Поръчки", href: "/admin-orders.html", page: "admin-orders" },
+  { name: "Материали", href: "/admin-materials.html", page: "admin-materials" }
+];
+
+const MODERATOR_NAV_ITEMS = [
+  { name: "Поръчки", href: "/admin-orders.html", page: "admin-orders" },
+  { name: "Материали", href: "/admin-materials.html", page: "admin-materials" }
 ];
 
 async function getUserRole() {
@@ -70,7 +76,9 @@ export async function initNav(activePage) {
   console.log('[NAV] User info:', userInfo);
 
   const isAuthenticated = userInfo !== null;
-  const isAdmin = userInfo?.role === "super_admin" || userInfo?.role === "moderator";
+  const isSuperAdmin = userInfo?.role === "super_admin";
+  const isModerator = userInfo?.role === "moderator";
+  const isAdmin = isSuperAdmin || isModerator;
   const userModePages = ["dashboard", "upload", "requests", "profile"];
   const isUserModeActive = userModePages.includes(activePage);
   const userModeActiveClass = isUserModeActive ? "active fw-bold" : "";
@@ -82,8 +90,10 @@ export async function initNav(activePage) {
 
   if (isAuthenticated) {
     navItems = [...PUBLIC_NAV_ITEMS];
-    if (isAdmin) {
-      navItems = [...navItems, ...ADMIN_NAV_ITEMS];
+    if (isSuperAdmin) {
+      navItems = [...navItems, ...SUPER_ADMIN_NAV_ITEMS];
+    } else if (isModerator) {
+      navItems = [...navItems, ...MODERATOR_NAV_ITEMS];
     }
   }
 
@@ -98,7 +108,7 @@ export async function initNav(activePage) {
          </a>
          <ul class="dropdown-menu dropdown-menu-end">
            ${userMenuItems}
-           ${isAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
+           ${isSuperAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
            <li><hr class="dropdown-divider"></li>
            <li><a class="dropdown-item" href="#" id="logout-btn-desktop">Изход</a></li>
          </ul>
@@ -114,7 +124,7 @@ export async function initNav(activePage) {
            </a>
            <ul class="dropdown-menu dropdown-menu-end">
              ${userMenuItems}
-             ${isAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
+             ${isSuperAdmin ? '<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin.html">Админ панел</a></li>' : ''}
              <li><hr class="dropdown-divider"></li>
              <li><a class="dropdown-item" href="#" id="logout-btn-mobile">Изход</a></li>
            </ul>
@@ -133,7 +143,7 @@ export async function initNav(activePage) {
         <div class="collapse navbar-collapse" id="mainNav">
           <ul class="navbar-nav nav-center-list me-auto mb-2 mb-lg-0">
             ${navItems.map((item) => {
-              const isFirstAdminItem = isAdmin && item.page === "admin";
+              const isFirstAdminItem = isSuperAdmin && item.page === "admin";
               const activeClass = item.page === activePage ? "active fw-bold" : "";
               const gapClass = isFirstAdminItem ? "nav-section-gap" : "";
               return `<li class="nav-item ${gapClass}"><a class="nav-link ${activeClass}" href="${item.href}">${item.name}</a></li>`;

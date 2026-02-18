@@ -25,6 +25,11 @@ onReady(async () => {
     return;
   }
 
+  if (role === "moderator") {
+    window.location.replace("/admin-orders.html");
+    return;
+  }
+
   if (roleLabel) {
     roleLabel.textContent = role.toUpperCase();
   }
