@@ -181,7 +181,7 @@ export async function initNav(activePage) {
     : `<li class="nav-item"><a class="nav-link" href="/app/login.html">Вход</a></li>
        <li class="nav-item"><a class="btn btn-outline-light ms-2" href="/app/register.html">Регистрация</a></li>`;
 
-  const mobileProfile = isAuthenticated
+  const mobileTopSlot = isAuthenticated
     ? `<div class="mobile-profile-slot d-lg-none">
          <div class="dropdown">
            <a class="nav-link dropdown-toggle mobile-profile-toggle profile-dropdown-toggle ${userModeActiveClass}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -197,13 +197,15 @@ export async function initNav(activePage) {
            </ul>
          </div>
        </div>`
-    : "";
+    : `<div class="mobile-profile-slot d-lg-none">
+         <a class="nav-link mobile-login-toggle" href="/app/login.html">Вход</a>
+       </div>`;
 
   navHost.innerHTML = `
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
       <div class="container nav-shell position-relative">
         <a class="navbar-brand fw-bold" href="/pages/index.html" style="font-size: 1.5rem;">🖨️ 3D World</a>
-        ${mobileProfile}
+        ${mobileTopSlot}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
