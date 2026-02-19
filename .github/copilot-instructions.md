@@ -42,4 +42,3 @@ Client: Static JS app
 Backend: Supabase (Database + Auth + Storage)
 
 Each screen MUST be a separate HTML file.
-
