@@ -18,6 +18,7 @@ export default defineConfig({
         profile: "app/profile.html",
         admin: "admin-panel/admin.html",
         adminUsers: "admin-panel/admin-users.html",
+        adminInquiries: "admin-panel/admin-inquiries.html",
         adminOrders: "admin-panel/admin-orders.html",
         adminMaterials: "admin-panel/admin-materials.html",
         adminCms: "admin-panel/admin-cms.html",

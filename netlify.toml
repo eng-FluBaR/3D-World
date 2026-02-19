@@ -43,6 +43,11 @@
   status = 301
 
 [[redirects]]
+  from = "/admin-inquiries.html"
+  to = "/admin-panel/admin-inquiries.html"
+  status = 301
+
+[[redirects]]
   from = "/admin-orders.html"
   to = "/admin-panel/admin-orders.html"
   status = 301
