@@ -19,52 +19,141 @@
     <main class="flex-grow-1">
       <div class="container py-5">
         <div class="page-hero mb-5">
-          <h1>Материали за перфектна производителност 🧱</h1>
-          <p>Високо качество и разнообразие от материали за всяка нужда</p>
+          <h1>Материали за FDM принтиране 🧱</h1>
+          <p>Кратко и практично ръководство: къде се използва всеки материал и какво поведение да очаквате</p>
         </div>
 
         <div class="row g-4 justify-content-center">
-          <div class="col-lg-6">
-            <p class="lead text-muted">
-              Choose from polymers, resins, and composites engineered for durability and precision.
-            </p>
-          </div>
-          <div class="col-lg-6">
+          <div class="col-lg-10">
             <div class="bg-light border rounded-4 p-4">
-              <h6 class="text-uppercase text-muted">Popular Options</h6>
-              <ul class="mb-0">
-                <li>PA12 Nylon - high strength</li>
-                <li>ABS - functional prototypes</li>
-                <li>Resin - ultra smooth finish</li>
-                <li>TPU - flexible parts</li>
-              </ul>
+              <h6 class="text-uppercase text-muted">Как да изберете материал (схема)</h6>
+              <ol class="mb-0">
+                <li><strong>Прототип и визуална част:</strong> PLA</li>
+                <li><strong>По-здрава универсална част:</strong> PETG</li>
+                <li><strong>Топлина / външни условия:</strong> ABS или ASA</li>
+                <li><strong>Гъвкави елементи:</strong> TPU</li>
+                <li><strong>Механично натоварване:</strong> Nylon (PA) / PC</li>
+              </ol>
             </div>
           </div>
         </div>
 
-        <div class="row g-4 mt-4">
-          <div class="col-md-6 col-lg-3">
-            <div class="border rounded-4 p-4 h-100">
-              <h6>Engineering Plastics</h6>
-              <p class="text-muted mb-0">Impact resistant for functional components.</p>
+        <div class="row g-3 mt-1 justify-content-center">
+          <div class="col-lg-10">
+            <div class="accordion" id="materials-accordion">
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-pla">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-pla" aria-expanded="false" aria-controls="collapse-pla">
+                    PLA — най-лесният и най-често използван материал
+                  </button>
+                </h2>
+                <div id="collapse-pla" class="accordion-collapse collapse" aria-labelledby="heading-pla" data-bs-parent="#materials-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Място на приложение:</strong> концептуални модели, визуални прототипи, декоративни и учебни детайли.</p>
+                    <p class="mb-2"><strong>Приблизителни свойства:</strong> якост на опън ~50–65 MPa, модул ~3.0–3.8 GPa, топлоустойчивост ~55–60°C.</p>
+                    <p class="mb-0"><strong>Честота на използване:</strong> <strong>Висока</strong> (много добър баланс цена/качество и лесен печат).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-petg">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-petg" aria-expanded="false" aria-controls="collapse-petg">
+                    PETG — универсален избор за функционални части
+                  </button>
+                </h2>
+                <div id="collapse-petg" class="accordion-collapse collapse" aria-labelledby="heading-petg" data-bs-parent="#materials-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Място на приложение:</strong> кутии, държачи, монтажни елементи, части с умерено натоварване и контакт с влага.</p>
+                    <p class="mb-2"><strong>Приблизителни свойства:</strong> якост ~45–55 MPa, добра удароустойчивост, топлоустойчивост ~70–80°C.</p>
+                    <p class="mb-0"><strong>Честота на използване:</strong> <strong>Висока</strong> (често за реални работни детайли).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-abs">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-abs" aria-expanded="false" aria-controls="collapse-abs">
+                    ABS — здрав материал за технически детайли
+                  </button>
+                </h2>
+                <div id="collapse-abs" class="accordion-collapse collapse" aria-labelledby="heading-abs" data-bs-parent="#materials-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Място на приложение:</strong> корпуси, монтажни елементи, функционални прототипи, детайли с умерена топлинна натовареност.</p>
+                    <p class="mb-2"><strong>Приблизителни свойства:</strong> якост ~40–50 MPa, добра ударна якост, топлоустойчивост ~95–105°C.</p>
+                    <p class="mb-0"><strong>Честота на използване:</strong> <strong>Средна</strong> (издръжлив материал, но изисква по-контролирани условия на печат).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-asa">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-asa" aria-expanded="false" aria-controls="collapse-asa">
+                    ASA — устойчив материал за външни условия
+                  </button>
+                </h2>
+                <div id="collapse-asa" class="accordion-collapse collapse" aria-labelledby="heading-asa" data-bs-parent="#materials-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Място на приложение:</strong> външни корпуси, автомобилни и фасадни елементи, части изложени на UV и климатични влияния.</p>
+                    <p class="mb-2"><strong>Приблизителни свойства:</strong> якост ~45–55 MPa, добра ударна устойчивост, топлоустойчивост ~95–105°C, по-добра UV устойчивост от ABS.</p>
+                    <p class="mb-0"><strong>Честота на използване:</strong> <strong>Средна към ниска</strong> (избира се при нужда от външна устойчивост и дълъг живот на открито).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-tpu">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-tpu" aria-expanded="false" aria-controls="collapse-tpu">
+                    TPU — гъвкав материал
+                  </button>
+                </h2>
+                <div id="collapse-tpu" class="accordion-collapse collapse" aria-labelledby="heading-tpu" data-bs-parent="#materials-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Място на приложение:</strong> уплътнения, омекотители, крачета, протектори и еластични функционални елементи.</p>
+                    <p class="mb-2"><strong>Приблизителни свойства:</strong> твърдост обикновено 85A–98A (Shore), висока еластичност и добра износоустойчивост.</p>
+                    <p class="mb-0"><strong>Честота на използване:</strong> <strong>Средна</strong> (когато е нужна гъвкавост, не твърдост).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-nylon">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-nylon" aria-expanded="false" aria-controls="collapse-nylon">
+                    Nylon (PA) — здрав и устойчив при механично натоварване
+                  </button>
+                </h2>
+                <div id="collapse-nylon" class="accordion-collapse collapse" aria-labelledby="heading-nylon" data-bs-parent="#materials-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Място на приложение:</strong> зъбни колела, втулки, шарнири и износоустойчиви функционални части.</p>
+                    <p class="mb-2"><strong>Приблизителни свойства:</strong> якост ~45–75 MPa, добра ударна якост, ниско триене, работна температура често ~90–120°C.</p>
+                    <p class="mb-0"><strong>Честота на използване:</strong> <strong>Средна към ниска</strong> (по-взискателен материал, но много добър за механика).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 overflow-hidden">
+                <h2 class="accordion-header" id="heading-pc">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-pc" aria-expanded="false" aria-controls="collapse-pc">
+                    Polycarbonate (PC) — висок клас за тежки условия
+                  </button>
+                </h2>
+                <div id="collapse-pc" class="accordion-collapse collapse" aria-labelledby="heading-pc" data-bs-parent="#materials-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Място на приложение:</strong> силово натоварени технически детайли и компоненти с по-висока термична устойчивост.</p>
+                    <p class="mb-2"><strong>Приблизителни свойства:</strong> якост ~55–70 MPa, висока ударна якост, топлоустойчивост често над ~110°C.</p>
+                    <p class="mb-0"><strong>Честота на използване:</strong> <strong>Ниска</strong> (по-сложен печат, използва се при конкретни инженерни задачи).</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="col-md-6 col-lg-3">
-            <div class="border rounded-4 p-4 h-100">
-              <h6>Transparent Resins</h6>
-              <p class="text-muted mb-0">Clear finishes with tight tolerances.</p>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <div class="border rounded-4 p-4 h-100">
-              <h6>Flexible Polymers</h6>
-              <p class="text-muted mb-0">Soft touch and bendable parts.</p>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <div class="border rounded-4 p-4 h-100">
-              <h6>High-temp Materials</h6>
-              <p class="text-muted mb-0">Heat-resistant for demanding environments.</p>
+        </div>
+
+        <div class="row g-4 mt-1 justify-content-center">
+          <div class="col-lg-10">
+            <div class="bg-light border rounded-4 p-4">
+              <h6 class="mb-2">Бележка</h6>
+              <p class="text-muted mb-0">Стойностите са ориентировъчни и зависят от марка филамент, настройки за печат и геометрия на модела.</p>
             </div>
           </div>
         </div>
@@ -73,8 +162,8 @@
 
     <footer class="border-top py-4">
       <div class="container d-flex flex-wrap justify-content-between align-items-center">
-        <span class="text-muted">Need a custom material? We can source it.</span>
-        <a class="text-decoration-none" href="/pages/contacts.html">Request material guide</a>
+        <span class="text-muted">Търсите конкретен материал? Можем да съдействаме с избор.</span>
+        <a class="text-decoration-none" href="/pages/contacts.html">Попитайте за консултация</a>
       </div>
     </footer>
 
