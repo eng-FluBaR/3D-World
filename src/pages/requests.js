@@ -57,15 +57,21 @@ function renderServiceToggles(serviceOptions = [], disabled = false) {
 function renderRow(request) {
   const badgeClass = STATUS_CLASSES[request.status] || "bg-secondary";
   const actionButtons = `<button class="btn btn-sm btn-outline-primary" data-action="open" data-id="${request.id}">Open</button>`;
+  const fileLabel = request.file_name || request.file_path || "-";
 
   return `
-    <tr>
-      <td>${request.file_name || request.file_path || "-"}</td>
-      <td><span class="badge ${badgeClass}">${request.status}</span></td>
-      <td>${formatPrice(request.price)}</td>
-      <td>${formatDeadline(request.deadline)}</td>
-      <td class="text-end">${actionButtons}</td>
-    </tr>
+    <article class="request-card" data-id="${request.id}">
+      <div class="request-card-top">
+        <div>
+          <div class="request-file text-truncate">${fileLabel}</div>
+          <small class="text-muted d-block mt-1">Price: ${formatPrice(request.price)} · Deadline: ${formatDeadline(request.deadline)}</small>
+        </div>
+        <span class="badge ${badgeClass}">${request.status}</span>
+      </div>
+      <div class="d-flex justify-content-end mt-3">
+        ${actionButtons}
+      </div>
+    </article>
   `;
 }
 
@@ -131,9 +137,7 @@ function renderRequestModalContent(request) {
 
 function renderEmptyState(body) {
   body.innerHTML = `
-    <tr>
-      <td colspan="5" class="text-muted">No requests yet.</td>
-    </tr>
+    <div class="requests-empty text-muted">No requests yet.</div>
   `;
 }
 
@@ -180,9 +184,7 @@ onReady(() => {
 
     if (error) {
       body.innerHTML = `
-        <tr>
-          <td colspan="5" class="text-danger">${error.message}</td>
-        </tr>
+        <div class="requests-empty text-danger">${error.message}</div>
       `;
       return;
     }

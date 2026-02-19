@@ -18,24 +18,23 @@ function hideMessage(element) {
 
 function renderRow(material) {
   return `
-    <tr data-id="${material.id}">
-      <td>${material.name || "-"}</td>
-      <td>
+    <article class="material-card" data-id="${material.id}">
+      <div class="material-name mb-2">${material.name || "-"}</div>
+      <div class="mb-3">
+        <label class="form-label mb-1">Base Price (€)</label>
         <input type="number" class="form-control form-control-sm price-input" value="${material.base_price || ""}" step="0.01" data-id="${material.id}" />
-      </td>
-      <td class="text-end">
+      </div>
+      <div class="material-actions">
         <button class="btn btn-sm btn-primary save-price" data-id="${material.id}">Save</button>
         <button class="btn btn-sm btn-outline-danger delete-material" data-id="${material.id}">Delete</button>
-      </td>
-    </tr>
+      </div>
+    </article>
   `;
 }
 
 function renderEmptyState(body) {
   body.innerHTML = `
-    <tr>
-      <td colspan="3" class="text-muted">No materials yet.</td>
-    </tr>
+    <div class="materials-empty text-muted">No materials yet.</div>
   `;
 }
 
@@ -86,7 +85,7 @@ onReady(async () => {
     body.querySelectorAll(".save-price").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const materialId = btn.getAttribute("data-id");
-        const row = body.querySelector(`tr[data-id="${materialId}"]`);
+        const row = body.querySelector(`[data-id="${materialId}"]`);
         const price = row.querySelector(".price-input")?.value || "";
 
         if (price === "" || Number.isNaN(Number(price))) {
@@ -133,7 +132,7 @@ onReady(async () => {
           if (allMaterials.length === 0) {
             renderEmptyState(body);
           } else {
-            body.querySelector(`tr[data-id="${materialId}"]`).remove();
+            body.querySelector(`[data-id="${materialId}"]`).remove();
           }
         }
       });
@@ -172,7 +171,7 @@ onReady(async () => {
         const newMaterial = data?.[0];
         if (newMaterial) {
           allMaterials.push(newMaterial);
-          if (body.querySelector("tr td[colspan]")) {
+          if (body.querySelector(".materials-empty")) {
             body.innerHTML = allMaterials.map(renderRow).join("");
           } else {
             body.innerHTML += renderRow(newMaterial);

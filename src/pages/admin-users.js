@@ -29,31 +29,36 @@ function renderRow(user) {
   const userKey = user.user_id;
 
   return `
-    <tr data-id="${userKey}">
-      <td>${user.email || "-"}</td>
-      <td>
+    <article class="user-card" data-id="${userKey}">
+      <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+        <div>
+          <div class="user-email">${user.email || "-"}</div>
+          <small class="text-muted">Created: ${formatDate(user.created_at)}</small>
+        </div>
+        <div class="user-status-slot">${getStatusBadge(user.is_disabled)}</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label mb-1">Role</label>
         <select class="form-select form-select-sm role-select" data-id="${userKey}">
           ${roleSelect}
         </select>
-      </td>
-      <td>${getStatusBadge(user.is_disabled)}</td>
-      <td>${formatDate(user.created_at)}</td>
-      <td class="text-end">
+      </div>
+
+      <div class="user-actions">
         <button class="btn btn-sm ${toggleButtonClass} toggle-user" data-id="${userKey}">
           ${toggleButtonText}
         </button>
         <button class="btn btn-sm btn-outline-danger delete-user" data-id="${userKey}">Delete</button>
         <button class="btn btn-sm btn-primary save-user" data-id="${userKey}">Save</button>
-      </td>
-    </tr>
+      </div>
+    </article>
   `;
 }
 
 function renderEmptyState(body) {
   body.innerHTML = `
-    <tr>
-      <td colspan="5" class="text-muted">No users found.</td>
-    </tr>
+    <div class="users-empty text-muted">No users found.</div>
   `;
 }
 
@@ -101,7 +106,7 @@ onReady(async () => {
     body.querySelectorAll(".toggle-user").forEach((btn) => {
       btn.addEventListener("click", () => {
         const userId = btn.getAttribute("data-id");
-        const row = body.querySelector(`tr[data-id="${userId}"]`);
+        const row = body.querySelector(`[data-id="${userId}"]`);
         const user = allUsers.find((u) => u.user_id === userId);
 
         if (currentUserId && userId === currentUserId) {
@@ -121,7 +126,7 @@ onReady(async () => {
         btn.className = `btn btn-sm ${newClass} toggle-user`;
         btn.setAttribute("data-id", userId);
 
-        const statusTd = row.querySelector("td:nth-child(3)");
+        const statusTd = row.querySelector(".user-status-slot");
         statusTd.innerHTML = getStatusBadge(userStates[userId].is_disabled);
       });
     });
@@ -129,7 +134,7 @@ onReady(async () => {
     body.querySelectorAll(".save-user").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const userId = btn.getAttribute("data-id");
-        const row = body.querySelector(`tr[data-id="${userId}"]`);
+        const row = body.querySelector(`[data-id="${userId}"]`);
         const role = row.querySelector(".role-select")?.value || "";
 
         if (!role) {
