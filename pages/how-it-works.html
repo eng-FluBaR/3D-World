@@ -19,60 +19,121 @@
     <main class="flex-grow-1">
       <div class="container py-5">
         <div class="page-hero mb-5">
-          <h1>Как работи поръчката в 3D World 🧭</h1>
-          <p>Кратко ръководство стъпка по стъпка, за да пуснете заявка за минути</p>
+          <h1>Как работи 3D World 🧭</h1>
+          <p>Кратко и ясно: от идея и файл до готова 3D принтирана част</p>
         </div>
 
         <div class="row g-4 justify-content-center">
-          <div class="col-lg-6">
-            <p class="lead text-muted">
-              Процесът е лесен: влизате, качвате файл, получавате оферта и проследявате статуса до готов продукт.
-            </p>
-          </div>
-          <div class="col-lg-6">
+          <div class="col-lg-10">
             <div class="bg-light border rounded-4 p-4">
-              <h6 class="text-uppercase text-muted">Бърза схема</h6>
+              <h6 class="text-uppercase text-muted">Схема за поръчка</h6>
               <ol class="mb-0">
-                <li>Регистрация / Вход</li>
-                <li>Качване на 3D файл (STL, OBJ, SVG)</li>
-                <li>Избор на материал и количество</li>
-                <li>Изпращане на заявка и изчакване на оферта</li>
-                <li>Проследяване на статуса в „Заявки“</li>
+                <li>Вход/Регистрация</li>
+                <li>Качване на файл (STL, OBJ или SVG)</li>
+                <li>Избор на материал, количество и бележки</li>
+                <li>Изпращане на заявка</li>
+                <li>Получаване на оферта и проследяване в „Заявки“</li>
               </ol>
             </div>
           </div>
         </div>
 
-        <div class="row g-4 mt-4">
-          <div class="col-md-4">
-            <div class="border rounded-4 p-4 h-100">
-              <h6>1) Влезте в профила си</h6>
-              <p class="text-muted mb-0">Отворете бутона „Вход" и се логнете. Ако нямате акаунт, първо направете регистрация.</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="border rounded-4 p-4 h-100">
-              <h6>2) Качете файл</h6>
-              <p class="text-muted mb-0">Отидете в „Качване“, изберете модел (STL/OBJ/SVG), материал, брой и добавете бележки при нужда.</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="border rounded-4 p-4 h-100">
-              <h6>3) Изпратете и следете</h6>
-              <p class="text-muted mb-0">Натиснете „Изпрати заявка“. После следете всичко в „Заявки“ – статус, цена и финален резултат.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="row g-4 mt-1">
+        <div class="row g-3 mt-1 justify-content-center">
           <div class="col-lg-10">
-            <div class="bg-light border rounded-4 p-4">
-              <h6 class="mb-3">Полезно да знаете</h6>
-              <ul class="mb-0 text-muted">
-                <li>Ако файлът е много голям, изчакайте качването да завърши преди да затваряте страницата.</li>
-                <li>По-ясните имена на файлове и кратко описание помагат за по-бърза обработка.</li>
-                <li>При въпроси използвайте страницата „Контакти“.</li>
-              </ul>
+            <div class="accordion" id="how-it-works-accordion">
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-printers">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-printers" aria-expanded="false" aria-controls="collapse-printers">
+                    1) Как работят 3D FDM принтерите
+                  </button>
+                </h2>
+                <div id="collapse-printers" class="accordion-collapse collapse" aria-labelledby="heading-printers" data-bs-parent="#how-it-works-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-3">
+                      FDM принтерът разтопява пластмасова нишка и я нанася слой по слой, докато изгради модела.
+                      Размерът на детайла зависи от работния обем на машината.
+                    </p>
+                    <ul class="mb-0">
+                      <li><strong>200×200×200 мм:</strong> подходящ за малки и средни детайли, прототипи и части с висока точност.</li>
+                      <li><strong>300×300×300 мм:</strong> подходящ за по-големи детайли или повече части в една поръчка.</li>
+                      <li>При нужда от по-голям модел, той може да се раздели на части и сглоби след печат.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-cad">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-cad" aria-expanded="false" aria-controls="collapse-cad">
+                    2) Кратко за 3D моделиране с CAD
+                  </button>
+                </h2>
+                <div id="collapse-cad" class="accordion-collapse collapse" aria-labelledby="heading-cad" data-bs-parent="#how-it-works-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-3">
+                      CAD софтуерът (напр. Fusion 360, SolidWorks, FreeCAD) се използва за прецизно чертане на 3D геометрия по размери.
+                    </p>
+                    <ul class="mb-0">
+                      <li>Създава се модел по реални размери (мм).</li>
+                      <li>Проверяват се дебелини, отвори и сглобки.</li>
+                      <li>Файлът се експортира като STL/OBJ за печат.</li>
+                      <li>Колкото по-чист е моделът, толкова по-надежден е печатът.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-limitations">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-limitations" aria-expanded="false" aria-controls="collapse-limitations">
+                    3) Какво не може да се прави (и защо)
+                  </button>
+                </h2>
+                <div id="collapse-limitations" class="accordion-collapse collapse" aria-labelledby="heading-limitations" data-bs-parent="#how-it-works-accordion">
+                  <div class="accordion-body text-muted">
+                    <ul class="mb-0">
+                      <li>Модели по-големи от работния обем в едно цяло — физическо ограничение на принтера.</li>
+                      <li>Прекалено тънки стени (напр. под ~0.8 мм при FDM) — чупят се или не се отпечатват стабилно.</li>
+                      <li>„Висящи“ елементи без опора — деформират се по време на печат.</li>
+                      <li>Невалиден/счупен mesh файл — принтерът няма коректна геометрия за обработка.</li>
+                      <li>Поръчки с опасно, забранено или незаконно предназначение — не се приемат по политика за безопасност.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-reasons">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-reasons" aria-expanded="false" aria-controls="collapse-reasons">
+                    4) Причини за отказ на поръчка
+                  </button>
+                </h2>
+                <div id="collapse-reasons" class="accordion-collapse collapse" aria-labelledby="heading-reasons" data-bs-parent="#how-it-works-accordion">
+                  <div class="accordion-body text-muted">
+                    <ul class="mb-0">
+                      <li>Файлът е повреден, непълен или не може да бъде подготвен за печат.</li>
+                      <li>Моделът не е технологично изпълним с наличните материали и машини.</li>
+                      <li>Липсват ключови данни (материал, количество, инструкции) след опит за уточнение.</li>
+                      <li>Съдържание, което нарушава законови или етични изисквания.</li>
+                      <li>Невъзможност за изпълнение в искания срок при текущия капацитет.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item border rounded-4 overflow-hidden">
+                <h2 class="accordion-header" id="heading-tip">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-tip" aria-expanded="false" aria-controls="collapse-tip">
+                    Съвет за бърза и успешна заявка
+                  </button>
+                </h2>
+                <div id="collapse-tip" class="accordion-collapse collapse" aria-labelledby="heading-tip" data-bs-parent="#how-it-works-accordion">
+                  <div class="accordion-body text-muted">
+                    Добавете кратко описание какво е предназначението на детайла и каква здравина очаквате.
+                    Това помага да изберем правилен материал и настройки още от първия опит.
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
