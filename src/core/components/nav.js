@@ -1,10 +1,12 @@
 import { getSession } from "../services/auth.js";
 import { createSupabaseClient } from "../services/supabase.js";
 
+const MATERIALS_LABEL = "Материали";
+
 const PUBLIC_NAV_ITEMS = [
   { name: "Начало", href: "/pages/index.html", page: "index" },
   { name: "Услуги", href: "/pages/services.html", page: "services" },
-  { name: "Материали", href: "/pages/materials.html", page: "materials" },
+  { name: MATERIALS_LABEL, href: "/pages/materials.html", page: "materials" },
   { name: "Как работи", href: "/pages/how-it-works.html", page: "how-it-works" },
   { name: "Галерия", href: "/pages/gallery.html", page: "gallery" },
   { name: "Контакти", href: "/pages/contacts.html", page: "contacts" }
