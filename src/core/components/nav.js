@@ -183,6 +183,12 @@ export async function initNav(activePage) {
     : `<li class="nav-item"><a class="nav-link" href="/app/login.html">Вход</a></li>
        <li class="nav-item"><a class="btn btn-outline-light ms-2" href="/app/register.html">Регистрация</a></li>`;
 
+  const mobileGuestAuthButtons = !isAuthenticated
+    ? `<ul class="navbar-nav d-lg-none mt-2 nav-mobile-auth-list">
+         <li class="nav-item"><a class="btn btn-outline-light" href="/app/register.html">Регистрация</a></li>
+       </ul>`
+    : "";
+
   const mobileTopSlot = isAuthenticated
     ? `<div class="mobile-profile-slot d-lg-none">
          <div class="dropdown">
@@ -218,6 +224,7 @@ export async function initNav(activePage) {
               return `<li class="nav-item"><a class="nav-link ${activeClass}" href="${item.href}">${item.name}</a></li>`;
             }).join("")}
           </ul>
+          ${mobileGuestAuthButtons}
           <ul class="navbar-nav nav-auth-list ms-auto d-none d-lg-flex">
             ${desktopAuthButtons}
           </ul>

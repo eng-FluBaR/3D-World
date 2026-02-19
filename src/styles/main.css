@@ -873,8 +873,8 @@ footer a:hover {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    top: 50%;
-    margin-top: -2px;
+    top: 12px;
+    margin-top: 0;
     z-index: 5;
   }
 
