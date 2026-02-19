@@ -1,90 +1,90 @@
 # 3D World
 
-Production-ready уеб платформа за 3D услуги (принтиране, моделиране, сканиране) с публичен сайт, потребителски портал и role-based админ среда.
+Production-ready web platform for 3D services (printing, modeling, scanning) with a public website, authenticated user portal, and role-based admin workspace.
 
-## Съдържание
-- [1. Кратко резюме](#1-кратко-резюме)
-- [2. Обхват на функционалностите](#2-обхват-на-функционалностите)
-- [3. Технологичен стек](#3-технологичен-стек)
-- [4. Системна архитектура](#4-системна-архитектура)
-- [5. Модел на базата данни](#5-модел-на-базата-данни)
-- [6. Авторизация и роли](#6-авторизация-и-роли)
-- [7. Жизнен цикъл на заявка](#7-жизнен-цикъл-на-заявка)
-- [8. Основни application потоци](#8-основни-application-потоци)
-- [9. Структура на проекта](#9-структура-на-проекта)
-- [10. Environment и конфигурация](#10-environment-и-конфигурация)
-- [11. Локална разработка](#11-локална-разработка)
-- [12. Build и deployment](#12-build-и-deployment)
-- [13. Troubleshooting наръчник](#13-troubleshooting-наръчник)
-- [14. Оперативен checklist](#14-оперативен-checklist)
-- [15. Референтни файлове](#15-референтни-файлове)
-
----
-
-## 1. Кратко резюме
-
-3D World е Vite Multi-Page Application (MPA), която предоставя:
-- публични страници за представяне на услуги и съдържание;
-- потребителска автентикация и подаване на заявки с качване на 3D файлове;
-- админ инструменти за операционна работа (поръчки, потребители, материали, CMS, запитвания);
-- Supabase-базирани persistence, auth, storage и role-based access control (RBAC).
-
-Платформата е подготвена за реална production употреба с:
-- row-level security (RLS) в Postgres;
-- policy enforcement за storage;
-- ясни deployment маршрути в Netlify;
-- page-level access guards във frontend.
+## Table of Contents
+- [1. Executive Summary](#1-executive-summary)
+- [2. Feature Scope](#2-feature-scope)
+- [3. Technology Stack](#3-technology-stack)
+- [4. System Architecture](#4-system-architecture)
+- [5. Database Model](#5-database-model)
+- [6. Authorization and Roles](#6-authorization-and-roles)
+- [7. Request Lifecycle](#7-request-lifecycle)
+- [8. Key Application Flows](#8-key-application-flows)
+- [9. Project Structure](#9-project-structure)
+- [10. Environment and Configuration](#10-environment-and-configuration)
+- [11. Local Development](#11-local-development)
+- [12. Build and Deployment](#12-build-and-deployment)
+- [13. Troubleshooting Guide](#13-troubleshooting-guide)
+- [14. Operational Checklist](#14-operational-checklist)
+- [15. Reference Files](#15-reference-files)
 
 ---
 
-## 2. Обхват на функционалностите
+## 1. Executive Summary
 
-### Публичен сайт
-- Информационни страници: `index`, `services`, `materials`, `how-it-works`, `gallery`, `contacts`.
-- Контактна форма, която записва записи в `contact_inquiries`.
-- Галерия с preview на модели:
-  - STL/OBJ визуализация чрез Three.js;
-  - SVG визуализация като изображение.
+3D World is a Vite Multi-Page Application (MPA) that provides:
+- public product/service presentation pages;
+- user authentication and request submission with 3D file uploads;
+- admin tooling for operations (orders, users, materials, CMS, inquiries);
+- Supabase-backed persistence, auth, storage, and role-based access control (RBAC).
 
-### Потребителска зона (автентикиран потребител)
-- Регистрация и вход чрез Supabase Auth.
-- Upload flow за STL/OBJ/SVG към `uploads` bucket.
-- Създаване на заявка с:
-  - материал,
-  - количество,
-  - бележки,
-  - избрани услуги (`scan`, `model`, `print`).
-- Преглед и ограничена редакция на заявки според статус.
-
-### Админ зона
-- Оперативен dashboard с KPI стойности.
-- Управление на поръчки (статус, цена, срок, изтриване, публикуване в галерия).
-- Управление на материали (админ действия и ценообразуване).
-- Управление на контактни запитвания.
-- Управление на роли/състояние на акаунти (super-admin ниво).
-- CMS управление на съдържание за страници (super-admin ниво).
+The platform is designed for practical production use with:
+- row-level security (RLS) in Postgres;
+- storage policy enforcement;
+- explicit deployment routing in Netlify;
+- page-level access guards in frontend.
 
 ---
 
-## 3. Технологичен стек
+## 2. Feature Scope
 
-| Слой | Технология |
+### Public Website
+- Landing and informational pages (`index`, `services`, `materials`, `how-it-works`, `gallery`, `contacts`).
+- Contact form that stores inquiries in `contact_inquiries`.
+- Gallery with model previews:
+  - STL/OBJ rendered with Three.js.
+  - SVG rendered as image preview.
+
+### Authenticated User Workspace
+- Email/password sign-up and sign-in via Supabase Auth.
+- Upload flow for STL/OBJ/SVG to `uploads` bucket.
+- Request creation with:
+  - material,
+  - quantity,
+  - notes,
+  - service options (`scan`, `model`, `print`).
+- Request review and limited modification by status.
+
+### Admin Workspace
+- Operational dashboard with KPIs.
+- Orders management (status, quote fields, deadline, delete, gallery publish).
+- Materials management (CRUD-like pricing/admin actions).
+- Contact inquiries management.
+- User role and account-state management (super-admin level).
+- CMS page content management (super-admin level).
+
+---
+
+## 3. Technology Stack
+
+| Layer | Technology |
 |---|---|
 | Frontend | Vanilla JavaScript (ES Modules), HTML, CSS |
 | UI | Bootstrap 5 + custom design system (`src/styles/main.css`) |
 | Bundler | Vite 5 (MPA mode) |
-| Backend платформа | Supabase (Postgres, Auth, Storage) |
-| 3D рендериране | Three.js + STLLoader + OBJLoader |
+| Backend Platform | Supabase (Postgres, Auth, Storage) |
+| 3D Rendering | Three.js + STLLoader + OBJLoader |
 | Hosting | Netlify |
 
 `package.json` scripts:
-- `npm run dev` – стартира development server
-- `npm run build` – създава production build в `dist`
-- `npm run preview` – локален preview на production build
+- `npm run dev` – start development server
+- `npm run build` – create production build in `dist`
+- `npm run preview` – preview built output
 
 ---
 
-## 4. Системна архитектура
+## 4. System Architecture
 
 ```mermaid
 flowchart LR
@@ -106,17 +106,17 @@ flowchart LR
   FE --> NF[Netlify Hosting]
 ```
 
-### Frontend access guarding
-- Публичните страници са отворени.
-- Потребителските страници изискват активна сесия.
-- Админ страниците изискват валидирана роля (`moderator` или `super_admin`).
-- Super-admin страниците изискват изрично `super_admin` роля.
+### Frontend Access Guarding
+- Public pages are open.
+- User pages require authenticated session.
+- Admin pages require role validation (`moderator` or `super_admin`).
+- Super-admin pages additionally enforce `super_admin` role.
 
 ---
 
-## 5. Модел на базата данни
+## 5. Database Model
 
-## 5.1 ER диаграма
+## 5.1 ER Diagram
 
 ```mermaid
 erDiagram
@@ -208,44 +208,44 @@ erDiagram
   }
 ```
 
-## 5.2 Data Dictionary (оперативно)
+## 5.2 Data Dictionary (Operational)
 
-| Таблица | Предназначение | Ключови връзки | Бележки |
+| Table | Purpose | Key Relations | Notes |
 |---|---|---|---|
-| `profiles` | Потребителски профил и role metadata | `user_id -> auth.users.id` | Приложението чете роля основно от тази таблица + role helper-и |
-| `user_roles` | Каноничен source за JWT/RLS role верификация | `user_id -> auth.users.id` | Синхронизира се с claims и `profiles.role` чрез trigger-и |
-| `requests` | Основни бизнес записи за потребителски заявки | `user_id -> profiles.user_id` | Status-driven workflow (`pending`, `quoted`, `accepted`, `rejected`, `completed`) |
-| `materials` | Каталог на материали и базови цени | няма директен FK от `requests` | `requests.material` е текст; каталогът е оперативен референт |
-| `gallery_projects` | Публични записи за завършени проекти | `request_id -> requests.id`, `created_by -> profiles.user_id` | Един gallery запис за една заявка (`request_id` е unique) |
-| `contact_inquiries` | Контактни запитвания от форма | опционален `user_id -> auth.users.id` | Поддържа anonymous и authenticated запитвания |
-| `cms_pages` | Управляемо съдържание за статични страници | няма | Съдържание, редактирано от админ |
+| `profiles` | User profile and role metadata | `user_id -> auth.users.id` | Application reads role primarily from this table + role helpers |
+| `user_roles` | Canonical role source for JWT/RLS verification | `user_id -> auth.users.id` | Synced with claims and profile role through triggers |
+| `requests` | Core business records for user-submitted jobs | `user_id -> profiles.user_id` | Status-driven workflow (`pending`, `quoted`, `accepted`, `rejected`, `completed`) |
+| `materials` | Material catalog and default pricing base | no direct FK from requests | `requests.material` is text; catalog is operational reference |
+| `gallery_projects` | Public showcase records for completed requests | `request_id -> requests.id`, `created_by -> profiles.user_id` | One gallery record per request (`request_id` is unique) |
+| `contact_inquiries` | Contact form submissions | optional `user_id -> auth.users.id` | Supports both anonymous and authenticated inquiries |
+| `cms_pages` | Managed content for static pages | none | Admin editable content storage |
 
-## 5.3 Storage bucket-и
+## 5.3 Storage Buckets
 
-| Bucket | Видимост | Типично съдържание | Access модел |
+| Bucket | Visibility | Typical Content | Access Model |
 |---|---|---|---|
-| `uploads` | private | файлове, качени към заявки | Authenticated users + policy проверки по папка/потребител |
-| `gallery` | public | файлове, публикувани в галерия | Public read; admin write/manage |
+| `uploads` | private | user-submitted request files | Authenticated users + policy checks by folder/user |
+| `gallery` | public | admin-published showcase files | Public read; admin write/manage |
 
 ---
 
-## 6. Авторизация и роли
+## 6. Authorization and Roles
 
-### Ролеви дефиниции
-- `user`: стандартен клиентски акаунт.
-- `moderator`: operations/admin достъп (поръчки, материали, запитвания).
-- `super_admin`: пълен админ достъп, включително user role management и CMS.
+### Role Definitions
+- `user`: standard customer account.
+- `moderator`: operations/admin access (orders, materials, inquiries).
+- `super_admin`: full admin including user role management and CMS.
 
-### Authorization модел
-- Frontend използва auth/role guards.
-- Postgres използва RLS политики и helper функции (`is_admin_user`, `is_super_admin_user`, JWT-verified role checks).
-- Role synchronization поддържа `user_roles`, `profiles.role` и JWT claims в синхрон.
+### Authorization Model
+- Frontend uses auth/role guards.
+- Postgres uses RLS policies and helper functions (`is_admin_user`, `is_super_admin_user`, JWT-verified role checks).
+- Role synchronization keeps `user_roles`, `profiles.role`, and JWT claims aligned.
 
-### Access matrix (високо ниво)
+### Access Matrix (High Level)
 
-| Зона | user | moderator | super_admin |
+| Area | user | moderator | super_admin |
 |---|---:|---:|---:|
-| Публични страници | ✅ | ✅ | ✅ |
+| Public pages | ✅ | ✅ | ✅ |
 | User dashboard/upload/requests/profile | ✅ | ✅ | ✅ |
 | Admin dashboard/orders/materials/inquiries | ❌ | ✅ | ✅ |
 | Admin users management | ❌ | ❌ | ✅ |
@@ -253,7 +253,7 @@ erDiagram
 
 ---
 
-## 7. Жизнен цикъл на заявка
+## 7. Request Lifecycle
 
 ```mermaid
 stateDiagram-v2
@@ -267,15 +267,15 @@ stateDiagram-v2
   completed --> [*]
 ```
 
-Lifecycle бележки:
-- Публикуване в галерия е позволено само за завършени (`completed`) заявки.
-- Правата за update/edit се ограничават от UI логика и database policies.
+Lifecycle notes:
+- Gallery publication is allowed only for completed requests.
+- Update/edit permissions are constrained by both UI logic and database policies.
 
 ---
 
-## 8. Основни application потоци
+## 8. Key Application Flows
 
-## 8.1 Upload + създаване на заявка
+## 8.1 Upload + Request Creation Flow
 
 ```mermaid
 sequenceDiagram
@@ -295,7 +295,7 @@ sequenceDiagram
   Frontend-->>User: Success message
 ```
 
-## 8.2 Admin publish към галерия
+## 8.2 Admin Publish to Gallery
 
 ```mermaid
 flowchart TD
@@ -309,7 +309,7 @@ flowchart TD
 
 ---
 
-## 9. Структура на проекта
+## 9. Project Structure
 
 ```text
 .
@@ -333,39 +333,39 @@ flowchart TD
 
 ---
 
-## 10. Environment и конфигурация
+## 10. Environment and Configuration
 
-## 10.1 Задължителни environment променливи
+## 10.1 Required Environment Variables
 
-Създай `.env` в root на проекта:
+Create `.env` in project root:
 
 ```dotenv
 VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 VITE_SUPABASE_ANON_KEY=YOUR_PUBLISHABLE_OR_ANON_KEY
 ```
 
-## 10.2 Източници на конфигурация
+## 10.2 Configuration Sources
 - Supabase client config: `src/core/services/supabase.js`
-- Auth операции: `src/core/services/auth.js`
+- Auth operations: `src/core/services/auth.js`
 - Route/page guards: `src/main.js`, `src/core/utils/auth-guards.js`, `src/core/utils/role-guards.js`
 
 ---
 
-## 11. Локална разработка
+## 11. Local Development
 
-## 11.1 Предварителни изисквания
-- Node.js 18+ (20+ препоръчително)
+## 11.1 Prerequisites
+- Node.js 18+ (20+ recommended)
 - npm
-- Supabase проект с приложени схема и политики
+- Supabase project configured with required schema and policies
 
-## 11.2 Инсталация и стартиране
+## 11.2 Install and Run
 
 ```bash
 npm install
 npm run dev
 ```
 
-## 11.3 Build и preview
+## 11.3 Build and Preview
 
 ```bash
 npm run build
@@ -374,76 +374,76 @@ npm run preview
 
 ---
 
-## 12. Build и deployment
+## 12. Build and Deployment
 
-## 12.1 Netlify setup
+## 12.1 Netlify Setup
 - Build command: `npm run build`
 - Publish directory: `dist`
 - Redirect definitions: `netlify.toml`
 
-## 12.2 Критично правило за MPA deployment
-Всяка страница, която трябва да съществува в production, трябва да бъде добавена във `vite.config.js` под `build.rollupOptions.input`.
+## 12.2 MPA Deployment Rule (Critical)
+Every page that must exist in production must be listed in `vite.config.js` under `build.rollupOptions.input`.
 
-Ако страница липсва в input map-а, Netlify ще върне 404 за този path, дори локално да работи.
+If a page is missing from this input map, Netlify serves 404 for that path even if local development works.
 
-## 12.3 Manual deployment (при изключен auto deploy)
-1. Build локално:
+## 12.3 Manual Deployment (Auto Deploy Disabled)
+1. Build locally:
    ```bash
    npm run build
    ```
-2. Отвори Netlify -> Site -> Deploys.
-3. Trigger manual deploy (или drag-drop на `dist`).
-4. Потвърди, че deploy-ът е active и route-овете се отварят коректно.
+2. Open Netlify -> Site -> Deploys.
+3. Trigger manual deploy (or drag-drop `dist`).
+4. Verify deploy is active and paths resolve correctly.
 
 ---
 
-## 13. Troubleshooting наръчник
+## 13. Troubleshooting Guide
 
 ### 13.1 Netlify `Page not found`
-- Провери дали страницата е добавена във `vite.config.js` input map.
-- Провери дали има съответен redirect в `netlify.toml` при нужда.
-- Пусни нов deploy (старият artifact остава активен при изключен auto-deploy).
+- Confirm page exists in `vite.config.js` input map.
+- Confirm matching redirect in `netlify.toml` if needed.
+- Trigger new deploy (old artifact remains active when auto-deploy is off).
 
 ### 13.2 `Supabase env vars missing`
-- Увери се, че `.env` съдържа и двата `VITE_SUPABASE_*` ключа.
+- Ensure `.env` contains both required `VITE_SUPABASE_*` keys.
 
-### 13.3 Upload fail (400 / 403)
-- Приложи/провери storage политики от `database/STORAGE_SETUP.sql`.
-- Валидарай MIME/extension поддръжката за STL/OBJ/SVG.
-- Провери authentication състоянието и folder policy ограниченията.
+### 13.3 Upload fails (400 / 403)
+- Apply/verify storage policies from `database/STORAGE_SETUP.sql`.
+- Validate MIME/extension support for STL/OBJ/SVG.
+- Check user authentication state and folder policy constraints.
 
-### 13.4 Достъпът до admin page е отказан
-- Провери ролята на потребителя в `profiles` и `user_roles`.
-- Провери синхронизацията на JWT claim (`user_role`) за текущата сесия.
-
----
-
-## 14. Оперативен checklist
-
-Преди production release:
-- [ ] `npm run build` минава успешно.
-- [ ] Всички production страници са в Vite MPA input map.
-- [ ] Налични са нужните redirects в `netlify.toml`.
-- [ ] Supabase RLS policies са приложени (tables + storage).
-- [ ] Role sync (`profiles` <-> `user_roles` <-> JWT claims) е здрав.
-- [ ] Upload и request flow са тествани end-to-end.
-- [ ] Достъпът до admin inquiries/orders/materials/users е валидиран по роли.
+### 13.4 Admin page access denied
+- Verify user role in `profiles` and `user_roles`.
+- Verify JWT claim synchronization (`user_role`) for current session.
 
 ---
 
-## 15. Референтни файлове
+## 14. Operational Checklist
+
+Before production release:
+- [ ] `npm run build` passes.
+- [ ] All production pages are present in Vite MPA input map.
+- [ ] Required redirects exist in `netlify.toml`.
+- [ ] Supabase RLS policies are applied (tables + storage).
+- [ ] Role sync (`profiles` <-> `user_roles` <-> JWT claims) is healthy.
+- [ ] Upload and request flow tested end-to-end.
+- [ ] Admin inquiries/orders/materials/users access validated per role.
+
+---
+
+## 15. Reference Files
 
 - `vite.config.js` – MPA page entry points
-- `netlify.toml` – routing redirects и deployment поведение
+- `netlify.toml` – routing redirects and deployment behavior
 - `src/main.js` – app bootstrap + page guards
 - `src/core/components/nav.js` – role-aware navigation
-- `src/core/services/supabase.js` – Supabase client initialization
-- `src/core/services/auth.js` – session/auth operations
+- `src/core/services/supabase.js` – Supabase client creation
+- `src/core/services/auth.js` – session/auth methods
 - `database/supabase-schema.sql` – schema snapshot
 - `database/STORAGE_SETUP.sql` – storage policy setup script
 - `supabase/migrations/` – migration history (source of truth)
-- `docs/БЪРЗА_НАСТРОЙКА.md` и `docs/STORAGE_ИНСТРУКЦИИ.md` – оперативни setup бележки
+- `docs/БЪРЗА_НАСТРОЙКА.md` and `docs/STORAGE_ИНСТРУКЦИИ.md` – operational setup notes
 
 ---
 
-За GitHub аудиторията тази документация е достатъчно пълна за onboarding, архитектурно разбиране, локален setup, сигурен deployment и оперативно troubleshooting.
+For GitHub readers, this documentation is intended to be complete enough for onboarding, architecture understanding, local setup, secure deployment, and operations troubleshooting.
