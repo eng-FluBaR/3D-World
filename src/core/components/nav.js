@@ -210,7 +210,7 @@ export async function initNav(activePage) {
        </div>`;
 
   navHost.innerHTML = `
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #0b6bcb 0%, #0f766e 100%); box-shadow: 0 4px 15px rgba(11,107,203,0.22);">
       <div class="container nav-shell position-relative">
         <a class="navbar-brand fw-bold" href="/pages/index.html" style="font-size: 1.5rem;">🖨️ 3D World</a>
         ${mobileTopSlot}

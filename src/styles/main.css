@@ -1,18 +1,18 @@
 :root {
   color-scheme: light;
-  --primary: #667eea;
-  --primary-dark: #5568d3;
-  --secondary: #764ba2;
-  --accent: #f093fb;
-  --light-bg: #f8f9fa;
-  --border-color: #e9ecef;
-  --text-dark: #2d3748;
-  --text-light: #718096;
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --primary: #0b6bcb;
+  --primary-dark: #0858a8;
+  --secondary: #0f766e;
+  --accent: #0891b2;
+  --light-bg: #f4f8fc;
+  --border-color: #d6e2ee;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+  --gradient-primary: linear-gradient(135deg, #0b6bcb 0%, #0f766e 100%);
+  --gradient-secondary: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 30px rgba(102, 126, 234, 0.3);
+  --shadow-lg: 0 10px 30px rgba(11, 107, 203, 0.24);
 }
 
 * {
@@ -27,7 +27,7 @@ html, body {
 }
 
 body {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #f7fbff 0%, #eef6ff 48%, #e7f4f1 100%);
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   color: var(--text-dark);
@@ -94,7 +94,7 @@ main {
 #app-nav .dropdown-menu {
   border-radius: 0.9rem;
   box-shadow: 0 14px 34px rgba(24, 32, 56, 0.28);
-  border: 1px solid rgba(102, 126, 234, 0.28);
+  border: 1px solid rgba(11, 107, 203, 0.25);
   margin-top: 0.65rem;
   min-width: 220px;
   background: #ffffff;
@@ -105,7 +105,7 @@ main {
   padding: 0.7rem 0.95rem;
   transition: all 0.2s ease;
   border-radius: 0.55rem;
-  color: #2d3748;
+  color: #1f2d3d;
   font-weight: 600;
 }
 
@@ -233,13 +233,13 @@ main {
   border-radius: 1.25rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-sm);
-  background: #fff;
+  background: #ffffff;
   overflow: hidden;
 }
 
 .card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.25);
+  box-shadow: 0 15px 40px rgba(11, 107, 203, 0.18);
 }
 
 .card-body {
@@ -281,14 +281,14 @@ main {
 .btn-primary {
   background: var(--gradient-primary);
   color: #fff;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(11, 107, 203, 0.25);
 }
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 10px 25px rgba(11, 107, 203, 0.35);
   color: #fff;
-  background: linear-gradient(135deg, var(--primary-dark) 0%, #663a8f 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #0f766e 100%);
 }
 
 .btn-primary:active {
@@ -298,14 +298,14 @@ main {
 .btn-outline-primary {
   color: var(--primary);
   border: 2px solid var(--primary);
-  background: #fff;
+  background: #ffffff;
 }
 
 .btn-outline-primary:hover {
   background: var(--primary);
   color: #fff;
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 20px rgba(11, 107, 203, 0.28);
 }
 
 .btn-outline-light {
@@ -323,12 +323,12 @@ main {
 .btn-secondary {
   background: var(--gradient-secondary);
   color: #fff;
-  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.2);
+  box-shadow: 0 4px 15px rgba(8, 145, 178, 0.24);
 }
 
 .btn-secondary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(240, 147, 251, 0.35);
+  box-shadow: 0 10px 25px rgba(8, 145, 178, 0.35);
   color: #fff;
 }
 
@@ -370,12 +370,18 @@ a:hover {
   transition: all 0.3s ease;
   padding: 0.875rem 1.25rem;
   font-size: 1rem;
+  background: #ffffff;
+  color: var(--text-dark);
 }
 
 .form-control:focus, .form-select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+  box-shadow: 0 0 0 0.25rem rgba(11, 107, 203, 0.18);
   outline: none;
+}
+
+.form-control::placeholder {
+  color: var(--text-light);
 }
 
 .form-label {
@@ -400,23 +406,23 @@ a:hover {
 }
 
 .alert-danger {
-  background-color: #fee;
-  color: #c00;
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 .alert-success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #dcfce7;
+  color: #166534;
 }
 
 .alert-info {
-  background-color: #d1ecf1;
-  color: #0c5460;
+  background-color: #e0f2fe;
+  color: #075985;
 }
 
 .alert-warning {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
 /* ============ Tables ============ */
@@ -438,7 +444,7 @@ a:hover {
 }
 
 .table tbody tr:hover {
-  background-color: rgba(102, 126, 234, 0.05);
+  background-color: rgba(11, 107, 203, 0.06);
 }
 
 .table tbody td {
