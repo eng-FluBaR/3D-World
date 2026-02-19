@@ -20,51 +20,69 @@
     <main class="flex-grow-1">
       <div class="container py-5">
         <div class="page-hero mb-5">
-          <h1>Услуги за всеки етап от продукта 🛠️</h1>
-          <p>Професионални 3D печатни решения за вашия бизнес</p>
+          <h1>Нашите услуги в 3D World 🛠️</h1>
+          <p>3D принтиране, 3D сканиране и 3D моделиране — в ясен процес от идея до готов резултат</p>
         </div>
 
         <div class="row g-4 justify-content-center">
-          <div class="col-lg-6">
-            <p class="lead text-muted">
-              From design review to production runs, our engineers help you deliver high-quality parts.
-            </p>
-          </div>
-          <div class="col-lg-6">
+          <div class="col-lg-10">
             <div class="bg-light border rounded-4 p-4">
-              <h6 class="text-uppercase text-muted">Core Services</h6>
-              <ul class="mb-0">
-                <li>Design for Manufacturing support</li>
-                <li>Rapid prototyping & iteration</li>
-                <li>Batch production planning</li>
-                <li>Post-processing and finishing</li>
-              </ul>
+              <h6 class="text-uppercase text-muted">Бърза ориентация</h6>
+              <ol class="mb-0">
+                <li><strong>Имате готов файл:</strong> използвайте услугата „3D принтиране“.</li>
+                <li><strong>Имате реален обект, но нямате 3D модел:</strong> използвайте „3D сканиране“.</li>
+                <li><strong>Имате идея/чертеж, но нямате 3D файл:</strong> използвайте „3D моделиране“.</li>
+              </ol>
             </div>
           </div>
         </div>
 
-        <div class="row g-4 mt-4">
-          <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-              <div class="card-body">
-                <h5>Prototyping</h5>
-                <p class="text-muted">Quick builds to validate form, fit, and function.</p>
+        <div class="row g-3 mt-1 justify-content-center">
+          <div class="col-lg-10">
+            <div class="accordion" id="services-accordion">
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-printing">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-printing" aria-expanded="false" aria-controls="collapse-printing">
+                    1) Услуга: 3D принтиране
+                  </button>
+                </h2>
+                <div id="collapse-printing" class="accordion-collapse collapse" aria-labelledby="heading-printing" data-bs-parent="#services-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Какво представлява:</strong> отпечатване на 3D детайли по ваш файл (STL/OBJ/SVG) с подходящ материал и настройки.</p>
+                    <p class="mb-2"><strong>Подходящо за:</strong> прототипи, резервни части, корпуси, функционални компоненти и малки серии.</p>
+                    <p class="mb-0"><strong>Как протича:</strong> качвате файл → избирате материал и количество → получавате оферта → печат → получавате готовата част.</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-              <div class="card-body">
-                <h5>Production</h5>
-                <p class="text-muted">Reliable repeatability with automated QA reporting.</p>
+
+              <div class="accordion-item border rounded-4 mb-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-scanning">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-scanning" aria-expanded="false" aria-controls="collapse-scanning">
+                    2) Услуга: 3D сканиране
+                  </button>
+                </h2>
+                <div id="collapse-scanning" class="accordion-collapse collapse" aria-labelledby="heading-scanning" data-bs-parent="#services-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Какво представлява:</strong> дигитализиране на реален обект в 3D модел чрез сканиране.</p>
+                    <p class="mb-2"><strong>Подходящо за:</strong> резервни части без чертеж, реплики, обратен инженеринг и архивиране на геометрия.</p>
+                    <p class="mb-0"><strong>Как протича:</strong> предоставяте физически обект → сканиране → обработка на mesh → получавате 3D файл за преглед/печат.</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-              <div class="card-body">
-                <h5>Finishing</h5>
-                <p class="text-muted">Color, polish, inserts, and assembly ready-to-ship.</p>
+
+              <div class="accordion-item border rounded-4 overflow-hidden">
+                <h2 class="accordion-header" id="heading-modeling">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-modeling" aria-expanded="false" aria-controls="collapse-modeling">
+                    3) Услуга: 3D моделиране
+                  </button>
+                </h2>
+                <div id="collapse-modeling" class="accordion-collapse collapse" aria-labelledby="heading-modeling" data-bs-parent="#services-accordion">
+                  <div class="accordion-body text-muted">
+                    <p class="mb-2"><strong>Какво представлява:</strong> създаване на 3D модел в CAD софтуер по идея, снимки, размери или 2D чертеж.</p>
+                    <p class="mb-2"><strong>Подходящо за:</strong> нови продукти, персонализирани детайли, технически части и подготовка за производство.</p>
+                    <p class="mb-0"><strong>Как протича:</strong> уточняване на изисквания → моделиране → преглед и корекции → финален файл за печат/производство.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -74,8 +92,8 @@
 
     <footer class="border-top py-4">
       <div class="container d-flex flex-wrap justify-content-between align-items-center">
-        <span class="text-muted">Trusted by product teams worldwide.</span>
-        <a class="text-decoration-none" href="/pages/contacts.html">Schedule a consultation</a>
+        <span class="text-muted">Не сте сигурни коя услуга е най-подходяща? Ще ви насочим.</span>
+        <a class="text-decoration-none" href="/pages/contacts.html">Поискайте консултация</a>
       </div>
     </footer>
 
